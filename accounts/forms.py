@@ -30,7 +30,7 @@ class SignUpForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('This email address is already registered.')
+            raise forms.ValidationError('This email address is already registered. Please use a different email or try logging in instead.')
         return email
 
     def save(self, commit=True):

@@ -103,24 +103,30 @@ def password_reset(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             try:
-                user = User.objects.get(email=email)
-                # Generate password reset email
-                subject = 'KitchenCrate - Password Reset Request'
-                email_template_name = 'accounts/password_reset_email.html'
-                c = {
-                    'email': user.email,
-                    'domain': request.get_host(),
-                    'site_name': 'KitchenCrate',
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'user': user,
-                    'token': default_token_generator.make_token(user),
-                    'protocol': 'https' if request.is_secure() else 'http',
-                }
-                email = render_to_string(email_template_name, c)
-                send_mail(subject, email, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
-                return redirect('user:password_reset_done')
-            except User.DoesNotExist:
-                # Don't reveal if email exists or not
+                # Get the first user with this email (most recent one)
+                user = User.objects.filter(email=email).first()
+                if user:
+                    # Generate password reset email
+                    subject = 'KitchenCrate - Password Reset Request'
+                    email_template_name = 'accounts/password_reset_email.html'
+                    c = {
+                        'email': user.email,
+                        'domain': request.get_host(),
+                        'site_name': 'KitchenCrate',
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'user': user,
+                        'token': default_token_generator.make_token(user),
+                        'protocol': 'https' if request.is_secure() else 'http',
+                    }
+                    email = render_to_string(email_template_name, c)
+                    send_mail(subject, email, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+                    return redirect('user:password_reset_done')
+                else:
+                    # Don't reveal if email exists or not
+                    return redirect('user:password_reset_done')
+            except Exception as e:
+                # Log the error for debugging but don't reveal to user
+                print(f"Password reset error: {e}")
                 return redirect('user:password_reset_done')
     else:
         form = PasswordResetForm()
