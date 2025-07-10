@@ -574,9 +574,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
+                        {% if user.is_authenticated %}
                         <a class="nav-link" href="{% url 'store:product_list' %}">Menu</a>
                     </li>
-                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'user:dashboard' %}">Dashboard</a>
                     </li>

@@ -5,7 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from .models import Category, Product
 from .forms import ProductForm, CategoryForm
-
+@login_required
 def product_list(request, category_slug=None):
     category = None
     categories = Category.objects.all()
@@ -55,12 +55,12 @@ def product_list(request, category_slug=None):
     }
     return render(request, 'store/product_list.html', context)
 
-
+@login_required
 def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
     return render(request, 'store/product_detail.html', {'product': product})
 
-
+@login_required
 def category_detail(request, slug):
     category = get_object_or_404(Category, slug=slug)
     products = Product.objects.filter(category=category, available=True)
