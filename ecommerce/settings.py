@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'crispy_bootstrap5',
+    'widget_tweaks',
 
     # Local apps
     'store',
@@ -149,6 +150,25 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='pk_test_your_stripe_key')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='sk_test_your_stripe_key')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='whsec_your_stripe_webhook_secret')
+
+# Payment settings for Nigeria
+PAYMENT_CURRENCY = 'NGN'  # Nigerian Naira
+PAYMENT_COUNTRY = 'NG'    # Nigeria
+
+# Paystack settings
+PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY', default='sk_test_your_paystack_key')
+PAYSTACK_PUBLIC_KEY = config('PAYSTACK_PUBLIC_KEY', default='pk_test_your_paystack_key')
+PAYSTACK_WEBHOOK_SECRET = config('PAYSTACK_WEBHOOK_SECRET', default='whsec_your_paystack_webhook_secret')
+
+# PayPal settings
+PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID', default='your_paypal_client_id')
+PAYPAL_CLIENT_SECRET = config('PAYPAL_CLIENT_SECRET', default='your_paypal_client_secret')
+PAYPAL_SANDBOX = config('PAYPAL_SANDBOX', default=True, cast=bool)
+
+# Flutterwave settings
+FLUTTERWAVE_SECRET_KEY = config('FLUTTERWAVE_SECRET_KEY', default='your_flutterwave_secret_key')
+FLUTTERWAVE_PUBLIC_KEY = config('FLUTTERWAVE_PUBLIC_KEY', default='your_flutterwave_public_key')
+FLUTTERWAVE_WEBHOOK_SECRET = config('FLUTTERWAVE_WEBHOOK_SECRET', default='whsec_your_flutterwave_webhook_secret')
 
 # Cart
 CART_SESSION_ID = 'cart'

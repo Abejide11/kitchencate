@@ -13,6 +13,9 @@
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
+                    
+                    <!-- Personal Information -->
+                    <h6 class="mb-3"><i class="fas fa-user me-2"></i>Personal Information</h6>
                     <div class="row">
                         <div class="col-md-6">
                             {{ form.first_name|as_crispy_field }}
@@ -29,6 +32,9 @@
                             {{ form.phone|as_crispy_field }}
                         </div>
                     </div>
+                    
+                    <!-- Delivery Address -->
+                    <h6 class="mb-3 mt-4"><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h6>
                     {{ form.address|as_crispy_field }}
                     <div class="row">
                         <div class="col-md-6">
@@ -36,6 +42,132 @@
                         </div>
                         <div class="col-md-6">
                             {{ form.postal_code|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method Selection -->
+                    <h6 class="mb-3 mt-4"><i class="fas fa-credit-card me-2"></i>Payment Method</h6>
+                    <div class="payment-methods">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option" data-method="card">
+                                    <input type="radio" name="payment_method" value="card" id="card" class="payment-radio" checked>
+                                    <label for="card" class="payment-label">
+                                        <div class="payment-icon">
+                                            <i class="fas fa-credit-card fa-2x text-primary"></i>
+                                        </div>
+                                        <div class="payment-info">
+                                            <h6 class="mb-1">Credit/Debit Card</h6>
+                                            <small class="text-muted">Visa, Mastercard, American Express</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option" data-method="bank_transfer">
+                                    <input type="radio" name="payment_method" value="bank_transfer" id="bank_transfer" class="payment-radio">
+                                    <label for="bank_transfer" class="payment-label">
+                                        <div class="payment-icon">
+                                            <i class="fas fa-university fa-2x text-success"></i>
+                                        </div>
+                                        <div class="payment-info">
+                                            <h6 class="mb-1">Bank Transfer</h6>
+                                            <small class="text-muted">Direct bank transfer</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option" data-method="cash_on_delivery">
+                                    <input type="radio" name="payment_method" value="cash_on_delivery" id="cash_on_delivery" class="payment-radio">
+                                    <label for="cash_on_delivery" class="payment-label">
+                                        <div class="payment-icon">
+                                            <i class="fas fa-money-bill-wave fa-2x text-warning"></i>
+                                        </div>
+                                        <div class="payment-info">
+                                            <h6 class="mb-1">Cash on Delivery</h6>
+                                            <small class="text-muted">Pay when you receive</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option" data-method="paypal">
+                                    <input type="radio" name="payment_method" value="paypal" id="paypal" class="payment-radio">
+                                    <label for="paypal" class="payment-label">
+                                        <div class="payment-icon">
+                                            <i class="fab fa-paypal fa-2x text-info"></i>
+                                        </div>
+                                        <div class="payment-info">
+                                            <h6 class="mb-1">PayPal</h6>
+                                            <small class="text-muted">Pay with PayPal account</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option" data-method="ussd">
+                                    <input type="radio" name="payment_method" value="ussd" id="ussd" class="payment-radio">
+                                    <label for="ussd" class="payment-label">
+                                        <div class="payment-icon">
+                                            <i class="fas fa-mobile-alt fa-2x text-success"></i>
+                                        </div>
+                                        <div class="payment-info">
+                                            <h6 class="mb-1">USSD Payment</h6>
+                                            <small class="text-muted">Pay via USSD code</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option" data-method="mobile_money">
+                                    <input type="radio" name="payment_method" value="mobile_money" id="mobile_money" class="payment-radio">
+                                    <label for="mobile_money" class="payment-label">
+                                        <div class="payment-icon">
+                                            <i class="fas fa-wallet fa-2x text-warning"></i>
+                                        </div>
+                                        <div class="payment-info">
+                                            <h6 class="mb-1">Mobile Money</h6>
+                                            <small class="text-muted">Paga, OPay, or other mobile money</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option" data-method="paystack">
+                                    <input type="radio" name="payment_method" value="paystack" id="paystack" class="payment-radio">
+                                    <label for="paystack" class="payment-label">
+                                        <div class="payment-icon">
+                                            <i class="fas fa-credit-card fa-2x text-primary"></i>
+                                        </div>
+                                        <div class="payment-info">
+                                            <h6 class="mb-1">Paystack</h6>
+                                            <small class="text-muted">Pay with Paystack</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-option" data-method="flutterwave">
+                                    <input type="radio" name="payment_method" value="flutterwave" id="flutterwave" class="payment-radio">
+                                    <label for="flutterwave" class="payment-label">
+                                        <div class="payment-icon">
+                                            <i class="fas fa-credit-card fa-2x text-danger"></i>
+                                        </div>
+                                        <div class="payment-info">
+                                            <h6 class="mb-1">Flutterwave</h6>
+                                            <small class="text-muted">Pay with Flutterwave</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -61,7 +193,7 @@
                         </form>
                         <small class="text-muted d-block mt-1">
                             <i class="fas fa-info-circle me-1"></i>
-                            Use this option for testing without Stripe setup
+                            Use this option for testing without payment setup
                         </small>
                     </div>
                     {% endif %}
@@ -82,22 +214,22 @@
                         <h6 class="mb-0">{{ item.product.name }}</h6>
                         <small class="text-muted">Qty: {{ item.quantity }}</small>
                     </div>
-                    <span>${{ item.total_price }}</span>
+                    <span>₦{{ item.total_price }}</span>
                 </div>
                 {% endfor %}
                 <hr>
                 <div class="d-flex justify-content-between mb-2">
                     <span>Subtotal:</span>
-                    <span>${{ cart.get_total_price }}</span>
+                    <span>₦{{ cart.get_total_price }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Shipping:</span>
+                    <span>Delivery:</span>
                     <span class="text-success">Free</span>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between">
                     <strong>Total:</strong>
-                    <strong class="h5 text-primary mb-0">${{ cart.get_total_price }}</strong>
+                    <strong class="h5 text-primary mb-0">₦{{ cart.get_total_price }}</strong>
                 </div>
             </div>
         </div>
@@ -117,9 +249,97 @@
                     <i class="fab fa-cc-mastercard fa-2x text-primary"></i>
                     <i class="fab fa-cc-amex fa-2x text-primary"></i>
                     <i class="fab fa-cc-discover fa-2x text-primary"></i>
+                    <i class="fab fa-paypal fa-2x text-info"></i>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.payment-methods {
+    margin-bottom: 20px;
+}
+
+.payment-option {
+    position: relative;
+}
+
+.payment-radio {
+    display: none;
+}
+
+.payment-label {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    margin: 0;
+}
+
+.payment-label:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+}
+
+.payment-radio:checked + .payment-label {
+    border-color: #007bff;
+    background: #f8f9ff;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.2);
+}
+
+.payment-icon {
+    margin-right: 15px;
+    text-align: center;
+    min-width: 50px;
+}
+
+.payment-info h6 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.payment-info small {
+    font-size: 0.8rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .payment-label {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 15px;
+    }
+    
+    .payment-icon {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    
+    paymentOptions.forEach(option => {
+        const radio = option.querySelector('.payment-radio');
+        const label = option.querySelector('.payment-label');
+        
+        label.addEventListener('click', function() {
+            // Uncheck all other radios
+            paymentOptions.forEach(otherOption => {
+                otherOption.querySelector('.payment-radio').checked = false;
+            });
+            
+            // Check this radio
+            radio.checked = true;
+        });
+    });
+});
+</script>
 {% endblock %} 

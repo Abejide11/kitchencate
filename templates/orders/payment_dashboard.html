@@ -1,0 +1,631 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Dashboard - KitchenCrate{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0fdf4 100%);
+        padding: 2rem 0;
+    }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .dashboard-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #10b981, #3b82f6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+
+    .dashboard-title {
+        background: linear-gradient(135deg, #10b981, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .stats-icon.blue {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .stats-icon.green {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .stats-icon.emerald {
+        background: linear-gradient(135deg, #059669, #047857);
+    }
+
+    .stats-icon.amber {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .stats-icon.purple {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+
+    .stats-label {
+        color: #6b7280;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .progress-bar-custom {
+        height: 8px;
+        background-color: #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+
+    .progress-fill.blue {
+        background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    }
+
+    .progress-fill.green {
+        background: linear-gradient(90deg, #10b981, #059669);
+    }
+
+    .progress-fill.emerald {
+        background: linear-gradient(90deg, #059669, #047857);
+    }
+
+    .progress-fill.amber {
+        background: linear-gradient(90deg, #f59e0b, #d97706);
+    }
+
+    .dashboard-section {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .payment-method-item {
+        background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .payment-method-item:hover {
+        border-color: #8b5cf6;
+        box-shadow: 0 5px 15px rgba(139, 92, 246, 0.1);
+    }
+
+    .order-card {
+        background: linear-gradient(135deg, #f9fafb, #ffffff);
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .order-card:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .status-badge.completed {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        color: #166534;
+    }
+
+    .status-badge.pending {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+    }
+
+    .status-badge.failed {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+    }
+
+    .btn-custom {
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .btn-blue {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+    }
+
+    .btn-blue:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        color: white;
+    }
+
+    .btn-green {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-green:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: white;
+    }
+
+    .quick-action-card {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .quick-action-card:hover {
+        border-color: #10b981;
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        transform: translateY(-3px);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .quick-action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        background: #f3f4f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: #9ca3af;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-icon">
+                <i class="fas fa-chart-line text-white" style="font-size: 2rem;"></i>
+            </div>
+            <h1 class="dashboard-title">Payment Dashboard</h1>
+            <p class="text-muted fs-5">Track your orders and payment history with real-time updates</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-5">
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="stats-card animate-fade-in">
+                    <div class="stats-icon blue">
+                        <i class="fas fa-shopping-bag text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <div class="stats-number">{{ total_orders }}</div>
+                    <div class="stats-label">Total Orders</div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill blue" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="stats-card animate-fade-in">
+                    <div class="stats-icon green">
+                        <i class="fas fa-naira-sign text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <div class="stats-number">₦{{ total_spent|floatformat:2 }}</div>
+                    <div class="stats-label">Total Spent</div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill green" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="stats-card animate-fade-in">
+                    <div class="stats-icon emerald">
+                        <i class="fas fa-check-circle text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <div class="stats-number">{{ completed_payments }}</div>
+                    <div class="stats-label">Completed</div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill emerald" style="width: {{ completed_percentage|floatformat:0 }}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="stats-card animate-fade-in">
+                    <div class="stats-icon amber">
+                        <i class="fas fa-clock text-white" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <div class="stats-number">{{ pending_payments }}</div>
+                    <div class="stats-label">Pending</div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill amber" style="width: {{ pending_percentage|floatformat:0 }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Payment Methods -->
+            <div class="col-lg-4 mb-4">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <div class="section-icon purple">
+                            <i class="fas fa-credit-card text-white"></i>
+                        </div>
+                        <h2 class="section-title">Payment Methods</h2>
+                    </div>
+                    
+                    {% if payment_methods %}
+                        {% for method, data in payment_methods.items %}
+                        <div class="payment-method-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ method }}</h6>
+                                    <small class="text-muted">{{ data.count }} orders</small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-success fs-5">₦{{ data.amount|floatformat:2 }}</div>
+                                    <div class="progress-bar-custom" style="width: 60px; height: 6px;">
+                                        <div class="progress-fill green" style="width: {{ data.percentage|floatformat:0 }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-credit-card" style="font-size: 2rem;"></i>
+                            </div>
+                            <p class="text-muted">No payment history yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="col-lg-8 mb-4">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <div class="section-icon blue">
+                            <i class="fas fa-list text-white"></i>
+                        </div>
+                        <h2 class="section-title">Recent Orders</h2>
+                        <div class="ms-auto">
+                            <a href="{% url 'orders:order_list' %}" class="btn-custom btn-green">
+                                View All
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {% if recent_orders %}
+                        {% for order in recent_orders %}
+                        <div class="order-card">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h5 class="fw-bold mb-0 me-3">Order #{{ order.id }}</h5>
+                                        <span class="status-badge 
+                                            {% if order.payment_status == 'completed' %}completed
+                                            {% elif order.payment_status == 'pending' %}pending
+                                            {% elif order.payment_status == 'failed' %}failed
+                                            {% else %}completed{% endif %}">
+                                            <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                                            {{ order.get_payment_status_display }}
+                                        </span>
+                                    </div>
+                                    <p class="text-muted mb-1">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        {{ order.created|date:"M d, Y" }}
+                                    </p>
+                                    <p class="text-muted">
+                                        <i class="fas fa-credit-card me-1"></i>
+                                        {{ order.get_payment_method_display }}
+                                    </p>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold fs-4">₦{{ order.get_total_cost|floatformat:2 }}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'orders:order_detail' order.id %}" 
+                                   class="btn-custom btn-blue flex-fill">
+                                    <i class="fas fa-eye me-1"></i>
+                                    View Details
+                                </a>
+                                {% if order.payment_status == 'pending' %}
+                                <a href="{% url 'orders:check_payment_status' order.id %}" 
+                                   class="btn-custom btn-green flex-fill">
+                                    <i class="fas fa-sync-alt me-1"></i>
+                                    Check Status
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-shopping-bag" style="font-size: 2rem;"></i>
+                            </div>
+                            <p class="text-muted fs-5 mb-3">No orders yet</p>
+                            <a href="{% url 'store:product_list' %}" class="btn-custom btn-green">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                Start Shopping
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Payments Section -->
+        {% if pending_orders %}
+        <div class="dashboard-section">
+            <div class="section-header">
+                <div class="section-icon amber">
+                    <i class="fas fa-exclamation-triangle text-white"></i>
+                </div>
+                <h2 class="section-title">Pending Payments</h2>
+            </div>
+            <div class="row">
+                {% for order in pending_orders %}
+                <div class="col-12 mb-3">
+                    <div class="order-card" style="border-color: #f59e0b; background: linear-gradient(135deg, #fef3c7, #fde68a);">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <h5 class="fw-bold mb-0 me-3">Order #{{ order.id }}</h5>
+                                    <span class="status-badge pending">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Pending
+                                    </span>
+                                </div>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    {{ order.created|date:"M d, Y" }}
+                                </p>
+                                <p class="text-muted mb-2">
+                                    <i class="fas fa-credit-card me-1"></i>
+                                    {{ order.get_payment_method_display }}
+                                </p>
+                                {% if order.payment_notes %}
+                                <div class="alert alert-warning py-2 px-3 mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    {{ order.payment_notes }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold fs-4">₦{{ order.get_total_cost|floatformat:2 }}</div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'orders:order_detail' order.id %}" 
+                               class="btn-custom btn-blue flex-fill">
+                                <i class="fas fa-eye me-1"></i>
+                                View Details
+                            </a>
+                            {% if order.payment_method == 'bank_transfer' %}
+                            <a href="{% url 'orders:bank_transfer_details' order.id %}" 
+                               class="btn-custom btn-green flex-fill">
+                                <i class="fas fa-upload me-1"></i>
+                                Update Transfer
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Actions -->
+        <div class="dashboard-section">
+            <div class="section-header">
+                <div class="section-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                    <i class="fas fa-bolt text-white"></i>
+                </div>
+                <h2 class="section-title">Quick Actions</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <a href="{% url 'store:product_list' %}" class="quick-action-card">
+                        <div class="quick-action-icon green">
+                            <i class="fas fa-shopping-cart text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">Shop Now</h5>
+                        <p class="text-muted mb-0">Browse our delicious products</p>
+                    </a>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <a href="{% url 'orders:order_list' %}" class="quick-action-card">
+                        <div class="quick-action-icon blue">
+                            <i class="fas fa-list text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">View Orders</h5>
+                        <p class="text-muted mb-0">See all your orders</p>
+                    </a>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <a href="{% url 'cart:cart_detail' %}" class="quick-action-card">
+                        <div class="quick-action-icon purple">
+                            <i class="fas fa-shopping-bag text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">Cart</h5>
+                        <p class="text-muted mb-0">View your cart</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation delays
+    const cards = document.querySelectorAll('.animate-fade-in');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+
+    // Auto-refresh payment status for pending orders
+    const pendingOrders = document.querySelectorAll('[data-order-id]');
+    
+    pendingOrders.forEach(function(element) {
+        const orderId = element.dataset.orderId;
+        const statusElement = element.querySelector('.payment-status');
+        
+        if (statusElement && statusElement.textContent.includes('Pending')) {
+            // Check payment status every 30 seconds
+            setInterval(function() {
+                fetch(`/orders/check-payment/${orderId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.paid) {
+                            statusElement.textContent = 'Completed';
+                            statusElement.className = 'status-badge completed';
+                        }
+                    })
+                    .catch(error => console.error('Error checking payment status:', error));
+            }, 30000);
+        }
+    });
+});
+</script>
+{% endblock %} 

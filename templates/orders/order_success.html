@@ -4,56 +4,136 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-md-10">
         <div class="card text-center">
             <div class="card-body py-5">
                 <div class="mb-4">
-                    <i class="fas fa-check-circle fa-5x text-success"></i>
+                    {% if order.paid %}
+                        <i class="fas fa-check-circle fa-5x text-success"></i>
+                    {% else %}
+                        <i class="fas fa-clock fa-5x text-warning"></i>
+                    {% endif %}
                 </div>
-                <h2 class="card-title mb-3">Thank You for Your Order!</h2>
-                <p class="card-text text-muted mb-4">
-                    Your order has been successfully placed and payment has been processed.
-                </p>
                 
-                <div class="alert alert-info">
-                    <h5>Order Details</h5>
-                    <p class="mb-1"><strong>Order Number:</strong> #{{ order.id }}</p>
-                    <p class="mb-1"><strong>Order Date:</strong> {{ order.created|date:"F j, Y" }}</p>
-                    <p class="mb-1"><strong>Total Amount:</strong> ${{ order.get_total_cost }}</p>
-                    <p class="mb-0"><strong>Status:</strong> 
-                        <span class="badge bg-success">{{ order.get_status_display }}</span>
+                {% if order.paid %}
+                    <h2 class="card-title mb-3">Thank You for Your Order!</h2>
+                    <p class="card-text text-muted mb-4">
+                        Your order has been successfully placed and payment has been processed. 
+                        We're preparing your delicious meal!
                     </p>
+                {% else %}
+                    <h2 class="card-title mb-3">Order Received!</h2>
+                    <p class="card-text text-muted mb-4">
+                        Your order has been placed successfully. Payment is being processed and you'll receive confirmation shortly.
+                    </p>
+                {% endif %}
+                
+                <div class="alert {% if order.paid %}alert-success{% else %}alert-warning{% endif %}">
+                    <h5><i class="fas fa-info-circle me-2"></i>Order Details</h5>
+                    <div class="row text-start">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Order Number:</strong> #{{ order.id }}</p>
+                            <p class="mb-1"><strong>Order Date:</strong> {{ order.created|date:"F j, Y" }}</p>
+                            <p class="mb-1"><strong>Order Time:</strong> {{ order.created|date:"g:i A" }}</p>
+                            <p class="mb-1"><strong>Payment Method:</strong> 
+                                <span class="badge bg-info">{{ order.get_payment_method_display_name }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Total Amount:</strong> ₦{{ order.get_total_cost }}</p>
+                            <p class="mb-1"><strong>Payment Status:</strong> 
+                                {% if order.paid %}
+                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i>Paid</span>
+                                {% else %}
+                                    <span class="badge bg-warning"><i class="fas fa-clock me-1"></i>Pending</span>
+                                {% endif %}
+                            </p>
+                            <p class="mb-0"><strong>Order Status:</strong> 
+                                <span class="badge bg-primary">{{ order.get_status_display }}</span>
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row mt-4">
-                    <div class="col-md-6">
-                        <h6>Shipping Address</h6>
-                        <p class="text-muted">
-                            {{ order.first_name }} {{ order.last_name }}<br>
-                            {{ order.address }}<br>
-                            {{ order.city }}, {{ order.postal_code }}<br>
-                            {{ order.phone }}
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>Order Items</h6>
-                        {% for item in order.items.all %}
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>{{ item.product.name }} (x{{ item.quantity }})</span>
-                            <span>${{ item.get_cost }}</span>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-0">
+                                    <strong>{{ order.first_name }} {{ order.last_name }}</strong><br>
+                                    {{ order.address }}<br>
+                                    {{ order.city }}, {{ order.postal_code }}<br>
+                                    <i class="fas fa-phone me-1"></i>{{ order.phone }}
+                                </p>
+                            </div>
                         </div>
-                        {% endfor %}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-utensils me-2"></i>Your Order</h6>
+                            </div>
+                            <div class="card-body">
+                                {% for item in order.items.all %}
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>{{ item.product.name }} <small class="text-muted">(x{{ item.quantity }})</small></span>
+                                    <span>₦{{ item.get_cost }}</span>
+                                </div>
+                                {% endfor %}
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total:</strong>
+                                    <strong>₦{{ order.get_total_cost }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-truck me-2"></i>Delivery Info</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-2">
+                                    <i class="fas fa-clock me-1"></i>
+                                    <strong>Estimated Delivery:</strong><br>
+                                    30-45 minutes
+                                </p>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-phone me-1"></i>
+                                    <strong>Contact:</strong><br>
+                                    (555) 123-4567
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="mt-4">
-                    <a href="{% url 'store:product_list' %}" class="btn btn-primary me-2">
-                        <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                    <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-shopping-bag me-2"></i>Order More Food
                     </a>
-                    <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline-primary">
+                    <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline-primary btn-lg me-2">
                         <i class="fas fa-eye me-2"></i>View Order Details
                     </a>
+                    <a href="{% url 'orders:order_list' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-list me-2"></i>My Orders
+                    </a>
                 </div>
+                
+                {% if not order.paid %}
+                <div class="mt-4">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Payment Processing:</strong> Your payment is being processed. You'll receive an email confirmation once it's complete.
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -1,0 +1,554 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mobile Money Payment - Order #{{ order.id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .provider-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .provider-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border-color: #10b981;
+    }
+    
+    .provider-card.selected {
+        border-color: #10b981;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+    
+    .form-input {
+        transition: all 0.3s ease;
+        border: 2px solid #e5e7eb;
+    }
+    
+    .form-input:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(107, 114, 128, 0.3);
+    }
+    
+    .status-badge {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: white;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    
+    .amount-display {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    .instruction-card {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .warning-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .provider-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .provider-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-right: 15px;
+    }
+    
+    .paga-logo { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
+    .opay-logo { background: linear-gradient(135deg, #4834d4 0%, #686de0 100%); }
+    .airtel-logo { background: linear-gradient(135deg, #ff9ff3 0%, #f368e0 100%); }
+    .mtn-logo { background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%); }
+    .vodafone-logo { background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%); }
+    
+    .fade-in {
+        animation: fadeIn 0.6s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .slide-up {
+        animation: slideUp 0.4s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 100vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                
+                <!-- Header Section -->
+                <div class="text-center mb-5 fade-in">
+                    <div class="payment-card text-white p-4 mb-4">
+                        <h1 class="display-5 fw-bold mb-2">
+                            <i class="fas fa-mobile-alt me-3"></i>
+                            Mobile Money Payment
+                        </h1>
+                        <p class="lead mb-0">Complete your payment using mobile money</p>
+                    </div>
+                </div>
+
+                <!-- Order Summary Card -->
+                <div class="card shadow-lg border-0 mb-4 slide-up">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h3 class="card-title mb-0 text-center">
+                            <i class="fas fa-receipt text-primary me-2"></i>
+                            Order Summary
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-3">
+                                <div class="bg-light rounded p-3">
+                                    <i class="fas fa-hashtag text-primary mb-2"></i>
+                                    <h5 class="mb-1">Order ID</h5>
+                                    <p class="text-muted mb-0">#{{ order.id }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center mb-3">
+                                <div class="amount-display">
+                                    <i class="fas fa-naira-sign mb-2"></i>
+                                    <h4 class="mb-1">Total Amount</h4>
+                                    <h3 class="mb-0 fw-bold">₦{{ order.get_total_cost|floatformat:2 }}</h3>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center mb-3">
+                                <div class="bg-light rounded p-3">
+                                    <i class="fas fa-mobile-alt text-primary mb-2"></i>
+                                    <h5 class="mb-1">Payment Method</h5>
+                                    <span class="status-badge">Mobile Money</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form Card -->
+                <div class="card shadow-lg border-0 mb-4 slide-up">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-credit-card text-primary me-2"></i>
+                            Select Mobile Money Provider
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" id="paymentForm">
+                            {% csrf_token %}
+                            
+                            <!-- Provider Selection -->
+                            <div class="mb-4">
+                                <label for="provider" class="form-label fw-bold">
+                                    <i class="fas fa-building me-2"></i>
+                                    Select Your Mobile Money Provider
+                                </label>
+                                <select name="provider" id="provider" required class="form-select form-input form-control-lg">
+                                    <option value="">Choose your provider...</option>
+                                    <option value="paga">Paga</option>
+                                    <option value="opay">OPay</option>
+                                    <option value="airtel_money">Airtel Money</option>
+                                    <option value="mtn_momo">MTN Mobile Money</option>
+                                    <option value="vodafone_cash">Vodafone Cash</option>
+                                </select>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="mb-4">
+                                <label for="phone_number" class="form-label fw-bold">
+                                    <i class="fas fa-phone me-2"></i>
+                                    Phone Number
+                                </label>
+                                <input type="tel" name="phone_number" id="phone_number" required
+                                       placeholder="Enter your phone number (e.g., 08012345678)"
+                                       pattern="[0-9]{11}"
+                                       class="form-control form-input form-control-lg">
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Enter your 11-digit Nigerian phone number
+                                </div>
+                            </div>
+
+                            <!-- Provider Information -->
+                            <div id="provider-info" class="alert alert-info border-0 instruction-card mb-4" style="display: none;">
+                                <h5 class="alert-heading">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Provider Information
+                                </h5>
+                                <div id="provider-details"></div>
+                            </div>
+
+                            <!-- Payment Instructions -->
+                            <div class="alert alert-primary border-0 instruction-card mb-4">
+                                <h5 class="alert-heading">
+                                    <i class="fas fa-list-check me-2"></i>
+                                    Payment Instructions
+                                </h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Select your mobile money provider</li>
+                                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Enter your registered phone number</li>
+                                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Dial the USSD code provided</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Confirm amount: <strong>₦{{ order.get_total_cost|floatformat:2 }}</strong></li>
+                                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Use reference: <strong>ORDER-{{ order.id }}</strong></li>
+                                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Keep the transaction receipt</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-3 d-md-flex justify-content-md-end">
+                                <a href="{% url 'orders:order_success' order.id %}" 
+                                   class="btn btn-secondary btn-lg px-4">
+                                    <i class="fas fa-times me-2"></i>
+                                    Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg px-4 pulse">
+                                    <i class="fas fa-mobile-alt me-2"></i>
+                                    Generate Payment Code
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Mobile Money Providers Info -->
+                <div class="card shadow-lg border-0 mb-4 slide-up">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-mobile-alt text-primary me-2"></i>
+                            Available Mobile Money Providers
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="provider-grid">
+                            <div class="provider-card card border-0 shadow-sm h-100" data-provider="paga">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="provider-logo paga-logo text-white">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">Paga</h5>
+                                    </div>
+                                    <p class="card-text text-muted mb-2">
+                                        <strong>USSD:</strong> *242*1*[Phone]*[Amount]#
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-download me-1"></i>
+                                        Available on Google Play & App Store
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="provider-card card border-0 shadow-sm h-100" data-provider="opay">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="provider-logo opay-logo text-white">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">OPay</h5>
+                                    </div>
+                                    <p class="card-text text-muted mb-2">
+                                        <strong>USSD:</strong> *955*[Phone]*[Amount]#
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-download me-1"></i>
+                                        Available on Google Play & App Store
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="provider-card card border-0 shadow-sm h-100" data-provider="airtel_money">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="provider-logo airtel-logo text-white">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">Airtel Money</h5>
+                                    </div>
+                                    <p class="card-text text-muted mb-2">
+                                        <strong>USSD:</strong> *432*[Phone]*[Amount]#
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-download me-1"></i>
+                                        Available on Google Play & App Store
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="provider-card card border-0 shadow-sm h-100" data-provider="mtn_momo">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="provider-logo mtn-logo text-white">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">MTN Mobile Money</h5>
+                                    </div>
+                                    <p class="card-text text-muted mb-2">
+                                        <strong>USSD:</strong> *600*[Phone]*[Amount]#
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-download me-1"></i>
+                                        Available on Google Play & App Store
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Important Notes -->
+                <div class="card shadow-lg border-0 slide-up">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            Important Notes
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="alert alert-warning border-0 warning-card">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2"><i class="fas fa-check text-warning me-2"></i>Ensure your phone number is registered with the selected provider</li>
+                                        <li class="mb-2"><i class="fas fa-check text-warning me-2"></i>Have sufficient balance in your mobile money account</li>
+                                        <li class="mb-2"><i class="fas fa-check text-warning me-2"></i>Keep your phone nearby to receive transaction notifications</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2"><i class="fas fa-check text-warning me-2"></i>Payment verification may take 5-10 minutes</li>
+                                        <li class="mb-2"><i class="fas fa-check text-warning me-2"></i>Contact support if you encounter any issues</li>
+                                        <li class="mb-2"><i class="fas fa-check text-warning me-2"></i>Keep transaction receipts for verification</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const providerSelect = document.getElementById('provider');
+    const phoneInput = document.getElementById('phone_number');
+    const providerInfo = document.getElementById('provider-info');
+    const providerDetails = document.getElementById('provider-details');
+    const providerCards = document.querySelectorAll('.provider-card');
+    
+    // Provider information with enhanced data
+    const providerData = {
+        'paga': {
+            name: 'Paga',
+            ussd: '*242*1*[Phone]*[Amount]#',
+            app: 'Available on Google Play & App Store',
+            instructions: 'Dial *242*1*[Phone]*[Amount]# to pay with Paga',
+            color: '#ff6b6b',
+            icon: 'fas fa-mobile-alt'
+        },
+        'opay': {
+            name: 'OPay',
+            ussd: '*955*[Phone]*[Amount]#',
+            app: 'Available on Google Play & App Store',
+            instructions: 'Dial *955*[Phone]*[Amount]# to pay with OPay',
+            color: '#4834d4',
+            icon: 'fas fa-mobile-alt'
+        },
+        'airtel_money': {
+            name: 'Airtel Money',
+            ussd: '*432*[Phone]*[Amount]#',
+            app: 'Available on Google Play & App Store',
+            instructions: 'Dial *432*[Phone]*[Amount]# to pay with Airtel Money',
+            color: '#ff9ff3',
+            icon: 'fas fa-mobile-alt'
+        },
+        'mtn_momo': {
+            name: 'MTN Mobile Money',
+            ussd: '*600*[Phone]*[Amount]#',
+            app: 'Available on Google Play & App Store',
+            instructions: 'Dial *600*[Phone]*[Amount]# to pay with MTN Mobile Money',
+            color: '#feca57',
+            icon: 'fas fa-mobile-alt'
+        },
+        'vodafone_cash': {
+            name: 'Vodafone Cash',
+            ussd: '*110*[Phone]*[Amount]#',
+            app: 'Available on Google Play & App Store',
+            instructions: 'Dial *110*[Phone]*[Amount]# to pay with Vodafone Cash',
+            color: '#48dbfb',
+            icon: 'fas fa-mobile-alt'
+        }
+    };
+    
+    // Validate phone number format with visual feedback
+    phoneInput.addEventListener('input', function() {
+        const value = this.value.replace(/\D/g, '');
+        if (value.length > 11) {
+            this.value = value.slice(0, 11);
+        }
+        
+        // Add visual feedback
+        if (value.length === 11) {
+            this.classList.add('is-valid');
+            this.classList.remove('is-invalid');
+        } else if (value.length > 0) {
+            this.classList.add('is-invalid');
+            this.classList.remove('is-valid');
+        } else {
+            this.classList.remove('is-valid', 'is-invalid');
+        }
+    });
+    
+    // Enhanced provider selection with visual feedback
+    providerSelect.addEventListener('change', function() {
+        const selectedProvider = this.value;
+        
+        // Remove selection from all cards
+        providerCards.forEach(card => card.classList.remove('selected'));
+        
+        if (selectedProvider && providerData[selectedProvider]) {
+            const data = providerData[selectedProvider];
+            
+            // Show provider info with enhanced styling
+            providerDetails.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong><i class="fas fa-building me-2"></i>Provider:</strong> ${data.name}</p>
+                        <p><strong><i class="fas fa-code me-2"></i>USSD Code:</strong> <code>${data.ussd}</code></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong><i class="fas fa-download me-2"></i>App:</strong> ${data.app}</p>
+                        <p><strong><i class="fas fa-info-circle me-2"></i>Instructions:</strong> ${data.instructions}</p>
+                    </div>
+                </div>
+            `;
+            
+            providerInfo.style.display = 'block';
+            providerInfo.classList.add('slide-up');
+            
+            // Highlight selected provider card
+            const selectedCard = document.querySelector(`[data-provider="${selectedProvider}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+        } else {
+            providerInfo.style.display = 'none';
+        }
+    });
+    
+    // Add click handlers to provider cards
+    providerCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const provider = this.dataset.provider;
+            if (provider) {
+                providerSelect.value = provider;
+                providerSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+    
+    // Form submission with enhanced feedback
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        const provider = providerSelect.value;
+        const phone = phoneInput.value;
+        
+        if (!provider || !phone || phone.length !== 11) {
+            e.preventDefault();
+            alert('Please select a provider and enter a valid 11-digit phone number.');
+            return false;
+        }
+        
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        submitBtn.disabled = true;
+        
+        // Re-enable after 3 seconds if form doesn't submit
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }, 3000);
+    });
+});
+</script>
+{% endblock %} 

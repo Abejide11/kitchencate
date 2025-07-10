@@ -1,221 +1,313 @@
-# KitchenCrate - Food Ordering Website with Django
+# KitchenCrate - Nigerian Food Delivery E-commerce
 
-A modern, full-featured food ordering website built with Django and Python. KitchenCrate lets customers browse delicious meals, add them to their cart, and order for delivery or pickup. Features include user authentication, menu management, order processing, and Stripe payment integration.
+A comprehensive Django-based e-commerce platform focused on Nigerian food delivery with integrated Nigerian payment systems.
 
 ## Features
 
-### 🍽️ **Food Ordering Experience**
-- **Menu Catalog**: Browse meals by categories (Rice, Seafood, Swallow, Soup, Pasta, Assorted Meat/Snack) with search and filtering
-- **Meal Details**: Comprehensive meal information with images and descriptions
-- **Cart**: Add, remove, and update food items with real-time calculations
-- **Responsive Design**: Mobile-friendly interface using Bootstrap 5
+### 🍽️ Core Features
+- **Product Management**: Categories, products with images, pricing
+- **Shopping Cart**: Session-based cart with quantity management
+- **User Authentication**: Email-based registration and login
+- **Order Management**: Complete order lifecycle tracking
+- **Payment Integration**: Multiple Nigerian payment methods
+- **Admin Dashboard**: Comprehensive admin interface
+- **Mobile Responsive**: Modern, mobile-first design
 
-### 👤 **User Management**
-- **User Registration & Login**: Secure authentication with email verification
-- **User Dashboard**: Personal dashboard with order history and account information
-- **Profile Management**: View and manage account details
+### 💳 Payment Methods
 
-### 💳 **Payment & Orders**
-- **Stripe Integration**: Secure payment processing with Stripe
-- **Order Management**: Complete order lifecycle from creation to delivery
-- **Order Tracking**: Real-time order status updates
-- **Order History**: View all past orders with detailed information
+#### 1. Credit/Debit Card (Stripe)
+- **Supported Cards**: Visa, Mastercard, American Express
+- **Currency**: Nigerian Naira (NGN)
+- **Features**: Secure checkout, webhook handling, payment verification
 
-### 🛠️ **Admin Features**
-- **Product Management**: Add, edit, and manage products and categories
-- **Order Management**: Process orders and update status
-- **Inventory Management**: Track stock levels and availability
-- **User Management**: Manage customer accounts
+#### 2. Bank Transfer
+- **Process**: Direct bank transfer to KitchenCrate account
+- **Features**: NUBAN support, transfer verification, receipt upload
+- **Banks**: GT Bank, Zenith, Access, First Bank, UBA, and more
 
-## Technology Stack
+#### 3. Cash on Delivery
+- **Process**: Pay when you receive your order
+- **Features**: Automatic order confirmation, delivery tracking
 
-- **Backend**: Django 4.2.7
-- **Database**: SQLite (can be easily changed to PostgreSQL/MySQL)
-- **Frontend**: Bootstrap 5, HTML5, CSS3, JavaScript
-- **Payment**: Stripe API
-- **Authentication**: Django Allauth
-- **Forms**: Django Crispy Forms with Bootstrap 5
-- **Images**: Pillow for image processing
+#### 4. PayPal
+- **Process**: PayPal account payment
+- **Features**: International payment support, secure checkout
 
-## Installation & Setup
+#### 5. USSD Payment
+- **Supported Banks**: GT Bank, Zenith, Access, First Bank, UBA, Fidelity, Ecobank, Stanbic, Union, Wema
+- **Process**: Dial USSD code → Enter PIN → Confirm payment
+- **Features**: Real-time code generation, bank-specific instructions
+
+#### 6. Mobile Money
+- **Providers**: Paga, OPay, Airtel Money, MTN MoMo, Vodafone Cash
+- **Process**: Dial provider code → Enter phone → Confirm payment
+- **Features**: Provider-specific codes, colorful UI, real-time validation
+
+#### 7. Paystack
+- **Process**: Nigerian payment gateway
+- **Features**: Card payments, bank transfers, USSD, QR codes
+- **Integration**: Webhook verification, payment status tracking
+
+#### 8. Flutterwave
+- **Process**: African payment gateway
+- **Features**: Multiple payment options, international cards
+- **Integration**: Webhook handling, transaction verification
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8 or higher
-- pip (Python package installer)
+- Python 3.8+
+- pip
+- Git
 
-### Step 1: Clone the Repository
-```bash
-git clone <repository-url>
-cd e-commerce
-```
+### Installation
 
-### Step 2: Create Virtual Environment
-```bash
-python -m venv venv
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd e-commerce
+   ```
 
-# On Windows
-venv\Scripts\activate
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-# On macOS/Linux
-source venv/bin/activate
-```
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Step 3: Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+4. **Set up environment variables**
+   ```bash
+   cp env.example .env
+   # Edit .env with your configuration
+   ```
 
-### Step 4: Environment Configuration
-Create a `.env` file in the project root:
+5. **Run migrations**
+   ```bash
+   python manage.py migrate
+   ```
+
+6. **Create superuser**
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+7. **Populate sample data**
+   ```bash
+   python manage.py populate_data
+   ```
+
+8. **Run the development server**
+   ```bash
+   python manage.py runserver
+   ```
+
+## ⚙️ Configuration
+
+### Environment Variables (.env)
+
 ```env
-SECRET_KEY=your-secret-key-here
+# Django
+SECRET_KEY=your-secret-key
 DEBUG=True
-STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+
+# Stripe (Credit/Debit Cards)
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_key
+STRIPE_SECRET_KEY=sk_test_your_stripe_key
 STRIPE_WEBHOOK_SECRET=whsec_your_stripe_webhook_secret
+
+# Paystack
+PAYSTACK_SECRET_KEY=sk_test_your_paystack_key
+PAYSTACK_PUBLIC_KEY=pk_test_your_paystack_key
+PAYSTACK_WEBHOOK_SECRET=whsec_your_paystack_webhook_secret
+
+# PayPal
+PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+PAYPAL_SANDBOX=True
+
+# Flutterwave
+FLUTTERWAVE_SECRET_KEY=your_flutterwave_secret_key
+FLUTTERWAVE_PUBLIC_KEY=your_flutterwave_public_key
+FLUTTERWAVE_WEBHOOK_SECRET=whsec_your_flutterwave_webhook_secret
 ```
 
-### Step 5: Database Setup
+### Payment Gateway Setup
+
+#### 1. Stripe Setup
+1. Create account at [stripe.com](https://stripe.com)
+2. Get API keys from Dashboard
+3. Set up webhook endpoint: `https://yourdomain.com/orders/webhook/stripe/`
+4. Add webhook events: `checkout.session.completed`
+
+#### 2. Paystack Setup
+1. Create account at [paystack.com](https://paystack.com)
+2. Get API keys from Dashboard
+3. Set up webhook endpoint: `https://yourdomain.com/orders/paystack/verify/`
+4. Add webhook events: `charge.success`
+
+#### 3. PayPal Setup
+1. Create account at [paypal.com](https://paypal.com)
+2. Get API credentials from Developer Dashboard
+3. Set up webhook endpoint: `https://yourdomain.com/orders/paypal/webhook/`
+4. Add webhook events: `PAYMENT.CAPTURE.COMPLETED`
+
+#### 4. Flutterwave Setup
+1. Create account at [flutterwave.com](https://flutterwave.com)
+2. Get API keys from Dashboard
+3. Set up webhook endpoint: `https://yourdomain.com/orders/flutterwave/webhook/`
+4. Add webhook events: `charge.completed`
+
+## 🧪 Testing Payment Methods
+
+### Development Testing
+
+1. **Skip Payment (Development)**
+   - Use the "Skip Payment" button in checkout
+   - Automatically marks orders as completed
+
+2. **Stripe Test Cards**
+   - Success: `4242 4242 4242 4242`
+   - Decline: `4000 0000 0000 0002`
+   - Expiry: Any future date
+   - CVC: Any 3 digits
+
+3. **Paystack Test**
+   - Use test API keys
+   - Test with sample phone numbers
+
+4. **USSD Testing**
+   - Use any 10-digit account number
+   - Test with different bank codes
+
+5. **Mobile Money Testing**
+   - Use any phone number format
+   - Test with different providers
+
+### Production Testing
+
+1. **Real Payment Processing**
+   - Use real payment credentials
+   - Test with small amounts
+   - Verify webhook handling
+
+2. **Bank Transfer Verification**
+   - Upload real transfer receipts
+   - Test admin verification process
+
+## 📱 Mobile Money Providers
+
+### Supported Providers
+
+| Provider | Code | Color | Features |
+|----------|------|-------|----------|
+| Paga | *242*1*{phone}*{amount}# | Green | Mobile wallet, USSD |
+| OPay | *955*{phone}*{amount}# | Orange | Digital banking, transfers |
+| Airtel Money | *432*{phone}*{amount}# | Red | Mobile money, airtime |
+| MTN MoMo | *165*{phone}*{amount}# | Yellow | Mobile money, transfers |
+| Vodafone Cash | *110*{phone}*{amount}# | Red | Mobile money, payments |
+
+### USSD Banking Codes
+
+| Bank | USSD Code | Features |
+|------|-----------|----------|
+| GT Bank | *737*1*{account}*{amount}# | Quick banking, transfers |
+| Zenith | *966*{account}*{amount}# | Mobile banking, payments |
+| Access | *901*{account}*{amount}# | USSD banking, transfers |
+| First Bank | *894*{account}*{amount}# | FirstMobile, payments |
+| UBA | *919*{account}*{amount}# | UBA Mobile, transfers |
+| Fidelity | *770*{account}*{amount}# | Fidelity Mobile, banking |
+| Ecobank | *326*{account}*{amount}# | Ecobank Mobile, payments |
+| Stanbic | *909*{account}*{amount}# | Stanbic Mobile, transfers |
+| Union | *826*{account}*{amount}# | Union Mobile, banking |
+| Wema | *945*{account}*{amount}# | Wema Mobile, payments |
+
+## 🔧 Management Commands
+
+### Payment Analytics
 ```bash
-python manage.py makemigrations
-python manage.py migrate
+# Generate payment reports
+python manage.py payment_analytics --format=json
+python manage.py payment_analytics --format=csv
+python manage.py payment_analytics --format=text
 ```
 
-### Step 6: Create Superuser
+### Sample Data
 ```bash
-python manage.py createsuperuser
+# Create sample products and categories
+python manage.py populate_data
+
+# Generate product images
+python manage.py generate_product_images
+
+# Fix category slugs
+python manage.py fix_category_slugs
 ```
 
-### Step 7: Collect Static Files
-```bash
-python manage.py collectstatic
+## 📊 Admin Features
+
+### Order Management
+- **Order Tracking**: View all orders with status
+- **Payment Verification**: Verify bank transfers and payments
+- **Bulk Actions**: Process multiple orders
+- **Analytics**: Payment statistics and reports
+
+### Payment Features
+- **Status Indicators**: Color-coded payment status
+- **Method Icons**: Visual payment method identification
+- **Verification Tools**: Bank transfer verification
+- **Export Options**: Export payment data
+
+## 🚀 Deployment
+
+### Render.com Deployment
+1. Connect your GitHub repository
+2. Set environment variables
+3. Deploy automatically on push
+
+### Environment Variables for Production
+```env
+DEBUG=False
+ALLOWED_HOSTS=yourdomain.com
+STRIPE_PUBLISHABLE_KEY=pk_live_your_key
+STRIPE_SECRET_KEY=sk_live_your_key
+PAYSTACK_SECRET_KEY=sk_live_your_key
+FLUTTERWAVE_SECRET_KEY=sk_live_your_key
 ```
 
-### Step 8: Run the Development Server
-```bash
-python manage.py runserver
-```
+## 🔒 Security Features
 
-The website will be available at `http://127.0.0.1:8000/`
+- **CSRF Protection**: All forms protected
+- **Payment Verification**: Webhook signature verification
+- **Input Validation**: Comprehensive form validation
+- **Secure Headers**: Security middleware enabled
+- **Environment Variables**: Sensitive data in .env
 
-## Project Structure
+## 📞 Support
 
-```
-e-commerce/
-├── ecommerce/                 # Main Django project
-│   ├── settings.py           # Project settings
-│   ├── urls.py               # Main URL configuration
-│   └── wsgi.py               # WSGI configuration
-├── store/                    # Store app (products, categories)
-│   ├── models.py             # Product and Category models
-│   ├── views.py              # Product views
-│   ├── urls.py               # Store URLs
-│   └── admin.py              # Admin configuration
-├── cart/                     # Shopping cart functionality
-│   ├── cart.py               # Cart class
-│   ├── views.py              # Cart views
-│   └── context_processors.py # Cart context processor
-├── orders/                   # Order management
-│   ├── models.py             # Order models
-│   ├── views.py              # Order views
-│   ├── forms.py              # Order forms
-│   └── admin.py              # Order admin
-├── accounts/                 # User account management
-│   ├── views.py              # Account views
-│   └── urls.py               # Account URLs
-├── templates/                # HTML templates
-│   ├── base.html             # Base template
-│   ├── store/                # Store templates
-│   ├── cart/                 # Cart templates
-│   ├── orders/               # Order templates
-│   └── accounts/             # Account templates
-├── static/                   # Static files (CSS, JS, images)
-├── media/                    # User-uploaded files
-├── requirements.txt          # Python dependencies
-├── manage.py                 # Django management script
-└── README.md                 # This file
-```
+For payment-related issues:
+1. Check webhook configurations
+2. Verify API keys
+3. Test with development credentials
+4. Review payment logs
 
-## Usage
-
-### For Customers
-1. **Browse Menu**: Visit the homepage to see all available meals
-2. **Add to Cart**: Click "Add to Cart" on any meal
-3. **Manage Cart**: View cart, update quantities, or remove items
-4. **Checkout**: Proceed to checkout and enter delivery or pickup information
-5. **Payment**: Complete payment using Stripe
-6. **Track Orders**: View order status and history in your dashboard
-
-### For Administrators
-1. **Access Admin Panel**: Go to `/admin/` and login with superuser credentials
-2. **Manage Products**: Add, edit, or remove products and categories
-3. **Process Orders**: Update order status and manage inventory
-4. **User Management**: View and manage customer accounts
-
-## Stripe Configuration
-
-### Test Cards for Development
-- **Visa**: 4242 4242 4242 4242
-- **Mastercard**: 5555 5555 5555 4444
-- **American Express**: 3782 822463 10005
-
-### Webhook Setup
-1. Install Stripe CLI
-2. Run: `stripe listen --forward-to localhost:8000/orders/webhook/`
-3. Copy the webhook signing secret to your `.env` file
-
-## Customization
-
-### Adding New Features
-- **Product Reviews**: Add review models and views
-- **Wishlist**: Implement wishlist functionality
-- **Email Notifications**: Add email templates for order confirmations
-- **Discount Codes**: Implement coupon system
-- **Multiple Payment Methods**: Add PayPal, Apple Pay, etc.
-
-### Styling
-- Modify `templates/base.html` for global styling changes
-- Update Bootstrap classes in templates
-- Add custom CSS in the `<style>` section or create separate CSS files
-
-## Deployment
-
-### Production Settings
-1. Set `DEBUG=False` in settings
-2. Configure production database (PostgreSQL recommended)
-3. Set up proper static file serving
-4. Configure email backend
-5. Set up SSL/HTTPS
-6. Configure Stripe webhooks for production
-
-### Recommended Hosting
-- **Heroku**: Easy deployment with PostgreSQL add-on
-- **DigitalOcean**: VPS with Django deployment
-- **AWS**: EC2 with RDS database
-- **PythonAnywhere**: Django-friendly hosting
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
+4. Test all payment methods
 5. Submit a pull request
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
-## Support
+---
 
-For support and questions:
-- Create an issue in the repository
-- Check the Django documentation
-- Review Stripe documentation for payment-related issues
-
-## Acknowledgments
-
-- Django community for the excellent framework
-- Bootstrap team for the responsive CSS framework
-- Stripe for payment processing
-- Font Awesome for icons 
+**KitchenCrate** - Fresh meals delivered to your doorstep with secure Nigerian payment options. 
