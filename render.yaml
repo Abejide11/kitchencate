@@ -14,5 +14,7 @@ services:
         value: "False"
       - key: ALLOWED_HOSTS
         value: "your-domain.com"
+      - key: PYTHONPATH
+        value: "."
     build:
       pythonVersion: 3.11.8 
