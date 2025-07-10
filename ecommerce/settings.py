@@ -149,10 +149,11 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='webblog902@gmail.com')
 EMAIL_HOST_PASSWORD = 'ercupdkazeiprbzc'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# Stripe settings (secure via .env)
-STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='pk_test_your_stripe_key')
-STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='sk_test_your_stripe_key')
-STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='whsec_your_stripe_webhook_secret')
+# Flutterwave settings (secure via .env)
+FLUTTERWAVE_PUBLIC_KEY = config('FLUTTERWAVE_PUBLIC_KEY', default='FLWPUBK_TEST_your_flutterwave_public_key')
+FLUTTERWAVE_SECRET_KEY = config('FLUTTERWAVE_SECRET_KEY', default='FLWSECK_TEST_your_flutterwave_secret_key')
+FLUTTERWAVE_ENCRYPTION_KEY = config('FLUTTERWAVE_ENCRYPTION_KEY', default='your_flutterwave_encryption_key')
+FLUTTERWAVE_WEBHOOK_SECRET = config('FLUTTERWAVE_WEBHOOK_SECRET', default='your_flutterwave_webhook_secret')
 
 # Payment settings for Nigeria
 PAYMENT_CURRENCY = 'NGN'  # Nigerian Naira

@@ -1,166 +1,185 @@
 from django.contrib import admin
+from django.utils.html import format_html
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+from django.contrib import messages
 from .models import Order, OrderItem, BankTransferDetails
+from .email_services import send_payment_confirmation_email, send_admin_payment_notification
 
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     raw_id_fields = ['product']
     extra = 0
-    readonly_fields = ['price']
+    readonly_fields = ['get_cost']
 
 
 class BankTransferDetailsInline(admin.StackedInline):
     model = BankTransferDetails
     extra = 0
-    readonly_fields = ['transfer_amount', 'created']
+    readonly_fields = ['created', 'verified']
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = [
-        'id', 'user', 'email', 'payment_method_display', 
-        'payment_status_display', 'total_cost_display', 'created', 'status'
-    ]
-    list_filter = [
-        'payment_method', 'payment_status', 'status', 'created', 'paid'
-    ]
-    list_editable = ['status']
-    search_fields = ['id', 'user__username', 'user__email', 'email', 'first_name', 'last_name']
-    readonly_fields = ['id', 'created', 'updated', 'total_cost_display']
+    list_display = ['id', 'user', 'first_name', 'last_name', 'email', 'total_cost_display', 
+                   'payment_status', 'status', 'created', 'paid']
+    list_filter = ['payment_status', 'status', 'payment_method', 'created', 'paid']
+    list_editable = ['payment_status', 'status', 'paid']
+    search_fields = ['id', 'user__username', 'user__email', 'first_name', 'last_name', 'email']
+    readonly_fields = ['created', 'updated', 'total_cost_display']
     inlines = [OrderItemInline, BankTransferDetailsInline]
     
     fieldsets = (
-        ('Order Information', {
-            'fields': ('id', 'user', 'created', 'updated', 'status')
-        }),
         ('Customer Information', {
-            'fields': ('first_name', 'last_name', 'email', 'phone')
+            'fields': ('user', 'first_name', 'last_name', 'email', 'phone')
         }),
         ('Delivery Information', {
-            'fields': ('address', 'postal_code', 'city', 'state')
+            'fields': ('address', 'postal_code', 'city')
         }),
         ('Payment Information', {
-            'fields': ('payment_method', 'payment_status', 'paid', 'stripe_id', 'payment_reference', 'payment_notes')
+            'fields': ('payment_method', 'payment_status', 'paid', 'stripe_id', 
+                      'payment_reference', 'payment_notes')
         }),
-        ('Order Summary', {
-            'fields': ('total_cost_display',),
-            'classes': ('collapse',)
+        ('Order Status', {
+            'fields': ('status', 'created', 'updated')
         }),
     )
     
-    def payment_method_display(self, obj):
-        """Display payment method with icon"""
-        icons = {
-            'card': '💳',
-            'bank_transfer': '🏦',
-    
-            'ussd': '📱',
-            'mobile_money': '📲',
-            
-            'apple_pay': '🍎',
-            'google_pay': '🤖'
-        }
-        icon = icons.get(obj.payment_method, '💰')
-        return f"{icon} {obj.get_payment_method_display()}"
-    payment_method_display.short_description = 'Payment Method'
-    
-    def payment_status_display(self, obj):
-        """Display payment status with color coding"""
-        colors = {
-            'pending': 'orange',
-            'completed': 'green',
-            'failed': 'red',
-            'refunded': 'blue',
-            'cancelled': 'gray'
-        }
-        color = colors.get(obj.payment_status, 'black')
-        return f"<span style=\"color: {color}; font-weight: bold;\">{obj.get_payment_status_display()}</span>"
-    payment_status_display.short_description = 'Payment Status'
-    
-    def total_cost_display(self, obj):
-        """Display total cost with currency"""
-        return f"₦{obj.get_total_cost():,.2f}"
-    total_cost_display.short_description = 'Total Cost'
-    
-    def get_queryset(self, request):
-        """Optimize queryset with select_related"""
-        return super().get_queryset(request).select_related('user')
-    
     actions = ['mark_as_paid', 'mark_as_processing', 'mark_as_shipped', 'mark_as_delivered']
     
+    def total_cost_display(self, obj):
+        return f"₦{obj.get_total_cost()}"
+    total_cost_display.short_description = 'Total Cost'
+    
     def mark_as_paid(self, request, queryset):
-        """Mark selected orders as paid"""
-        updated = queryset.update(paid=True, payment_status='completed')
-        self.message_user(request, f'{updated} orders marked as paid.')
+        updated = queryset.update(
+            paid=True, 
+            payment_status='completed',
+            status='processing'
+        )
+        messages.success(request, f'{updated} order(s) marked as paid.')
+        
+        # Send confirmation emails
+        for order in queryset:
+            try:
+                send_payment_confirmation_email(order)
+                send_admin_payment_notification(order)
+            except Exception as e:
+                messages.warning(request, f'Failed to send email for order #{order.id}: {e}')
+    
     mark_as_paid.short_description = "Mark selected orders as paid"
     
     def mark_as_processing(self, request, queryset):
-        """Mark selected orders as processing"""
         updated = queryset.update(status='processing')
-        self.message_user(request, f'{updated} orders marked as processing.')
+        messages.success(request, f'{updated} order(s) marked as processing.')
+    
     mark_as_processing.short_description = "Mark selected orders as processing"
     
     def mark_as_shipped(self, request, queryset):
-        """Mark selected orders as shipped"""
         updated = queryset.update(status='shipped')
-        self.message_user(request, f'{updated} orders marked as shipped.')
+        messages.success(request, f'{updated} order(s) marked as shipped.')
+    
     mark_as_shipped.short_description = "Mark selected orders as shipped"
     
     def mark_as_delivered(self, request, queryset):
-        """Mark selected orders as delivered"""
         updated = queryset.update(status='delivered')
-        self.message_user(request, f'{updated} orders marked as delivered.')
+        messages.success(request, f'{updated} order(s) marked as delivered.')
+    
     mark_as_delivered.short_description = "Mark selected orders as delivered"
+    
+    def response_change(self, request, obj):
+        if "_mark-paid" in request.POST:
+            obj.paid = True
+            obj.payment_status = 'completed'
+            obj.status = 'processing'
+            obj.save()
+            
+            try:
+                send_payment_confirmation_email(obj)
+                send_admin_payment_notification(obj)
+                messages.success(request, f'Order #{obj.id} marked as paid and confirmation email sent.')
+            except Exception as e:
+                messages.warning(request, f'Order marked as paid but failed to send email: {e}')
+            
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
+    
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.paid:
+            return self.readonly_fields + ('paid', 'payment_status')
+        return self.readonly_fields
 
 
 @admin.register(BankTransferDetails)
 class BankTransferDetailsAdmin(admin.ModelAdmin):
-    list_display = [
-        'id', 'order', 'bank_name', 'account_name', 'account_number', 
-        'transfer_amount', 'reference_number', 'created', 'verified'
-    ]
-    list_filter = ['bank_name', 'verified', 'created']
+    list_display = ['order', 'bank_name', 'account_name', 'account_number', 
+                   'transfer_amount', 'verified', 'created']
+    list_filter = ['verified', 'bank_name', 'created']
     search_fields = ['order__id', 'account_name', 'account_number', 'reference_number']
-    readonly_fields = ['order', 'transfer_amount', 'created']
+    readonly_fields = ['created', 'order_link']
     
     fieldsets = (
         ('Order Information', {
-            'fields': ('order', 'transfer_amount', 'created')
+            'fields': ('order_link', 'transfer_amount')
         }),
-        ('Bank Details', {
-            'fields': ('bank_name', 'account_name', 'account_number', 'nuban')
+        ('Bank Information', {
+            'fields': ('bank_name', 'account_name', 'account_number', 'routing_number', 
+                      'swift_code', 'iban', 'nuban')
         }),
-        ('Transfer Information', {
+        ('Transfer Details', {
             'fields': ('reference_number', 'transfer_date', 'receipt_image')
         }),
         ('Verification', {
-            'fields': ('verified', 'verification_notes')
+            'fields': ('verified', 'notes', 'verification_notes')
+        }),
+        ('Timestamps', {
+            'fields': ('created',)
         }),
     )
     
-    def get_queryset(self, request):
-        """Optimize queryset with select_related"""
-        return super().get_queryset(request).select_related('order')
+    actions = ['verify_transfers', 'reject_transfers']
     
-    actions = ['mark_as_verified', 'mark_as_unverified']
+    def order_link(self, obj):
+        if obj.order:
+            url = reverse('admin:orders_order_change', args=[obj.order.id])
+            return format_html('<a href="{}">Order #{}</a>', url, obj.order.id)
+        return "No Order"
+    order_link.short_description = 'Order'
     
-    def mark_as_verified(self, request, queryset):
-        """Mark selected transfers as verified"""
+    def verify_transfers(self, request, queryset):
         updated = queryset.update(verified=True)
+        messages.success(request, f'{updated} bank transfer(s) marked as verified.')
+        
         # Update corresponding orders
         for transfer in queryset:
             if transfer.order:
-                transfer.order.payment_status = 'completed'
                 transfer.order.paid = True
+                transfer.order.payment_status = 'completed'
+                transfer.order.status = 'processing'
                 transfer.order.save()
-        self.message_user(request, f'{updated} transfers marked as verified.')
-    mark_as_verified.short_description = "Mark selected transfers as verified"
+                
+                try:
+                    send_payment_confirmation_email(transfer.order)
+                    send_admin_payment_notification(transfer.order)
+                except Exception as e:
+                    messages.warning(request, f'Failed to send email for order #{transfer.order.id}: {e}')
     
-    def mark_as_unverified(self, request, queryset):
-        """Mark selected transfers as unverified"""
+    verify_transfers.short_description = "Verify selected bank transfers"
+    
+    def reject_transfers(self, request, queryset):
         updated = queryset.update(verified=False)
-        self.message_user(request, f'{updated} transfers marked as unverified.')
-    mark_as_unverified.short_description = "Mark selected transfers as unverified"
+        messages.success(request, f'{updated} bank transfer(s) marked as rejected.')
+    
+    reject_transfers.short_description = "Reject selected bank transfers"
+
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'product', 'price', 'quantity', 'get_cost']
+    list_filter = ['order__created']
+    search_fields = ['order__id', 'product__name']
+    readonly_fields = ['get_cost']
 
 
 # Customize admin site

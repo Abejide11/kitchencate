@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmed - KitchenCrate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .order-details {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .total {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Payment Confirmed!</h1>
+        <p>Thank you for your order, {{ user.first_name }}!</p>
+    </div>
+    
+    <div class="content">
+        <h2>Order #{{ order.id }}</h2>
+        <p>Your payment has been successfully processed and your order is confirmed.</p>
+        
+        <div class="order-details">
+            <h3>Order Summary</h3>
+            <p><strong>Order ID:</strong> #{{ order.id }}</p>
+            <p><strong>Payment Method:</strong> {{ payment_method }}</p>
+            <p><strong>Order Date:</strong> {{ order.created|date:"F j, Y" }}</p>
+            <p><strong>Delivery Address:</strong><br>
+            {{ order.address }}<br>
+            {{ order.city }}, {{ order.postal_code }}</p>
+            
+            <h4>Order Items:</h4>
+            {% for item in order.items.all %}
+            <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                <strong>{{ item.product.name }}</strong><br>
+                Quantity: {{ item.quantity }} × ₦{{ item.price }} = ₦{{ item.get_cost }}
+            </div>
+            {% endfor %}
+            
+            <div style="text-align: right; margin-top: 20px;">
+                <div class="total">Total: ₦{{ total_cost }}</div>
+            </div>
+        </div>
+        
+        <p>We'll start processing your order right away and you'll receive updates on your delivery status.</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ request.build_absolute_uri }}{% url 'orders:order_detail' order.id %}" class="btn">
+                View Order Details
+            </a>
+        </div>
+        
+        <div style="background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <h4>📧 Need Help?</h4>
+            <p>If you have any questions about your order, please don't hesitate to contact us:</p>
+            <p>📧 Email: support@kitchencrate.com<br>
+            📞 Phone: +234 123 456 7890</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Thank you for choosing KitchenCrate!</p>
+        <p>© 2024 KitchenCrate. All rights reserved.</p>
+    </div>
+</body>
+</html> 

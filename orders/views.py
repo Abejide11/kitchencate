@@ -9,14 +9,12 @@ from django.urls import reverse
 from django.db.models import Count, Sum
 from django.utils import timezone
 from datetime import timedelta
-import stripe
 import json
 from .models import Order, OrderItem, BankTransferDetails
 from .forms import OrderCreateForm, BankTransferForm
 from .payment_services import get_payment_service
+from .email_services import send_payment_confirmation_email, send_order_created_email, send_payment_pending_email
 from cart.cart import Cart
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 @login_required
@@ -118,10 +116,12 @@ def order_create(request):
                 return redirect('orders:ussd_payment', order_id=order.id)
             elif payment_method == 'mobile_money':
                 return redirect('orders:mobile_money_payment', order_id=order.id)
-            
+            elif payment_method.startswith('flutterwave_'):
+                # Handle Flutterwave payments
+                return process_flutterwave_payment(request, order, payment_method)
             else:
-                # Default to Stripe card payment
-                return process_stripe_payment(request, order, payment_method)
+                # Default to Flutterwave card payment
+                return process_flutterwave_payment(request, order, 'flutterwave_card')
     else:
         # Pre-fill form with user data if available
         initial_data = {}
@@ -135,23 +135,15 @@ def order_create(request):
     
     return render(request, 'orders/order_create.html', {
         'cart': cart,
-        'form': form,
-        'stripe_public_key': settings.STRIPE_PUBLISHABLE_KEY
+        'form': form
     })
 
 
-def process_stripe_payment(request, order, payment_method):
-    """Process Stripe payment with different payment methods"""
-    # Check if we should skip payment (for development)
-    skip_payment = request.POST.get('skip_payment', False)
-    
-    if skip_payment or settings.STRIPE_SECRET_KEY == 'sk_test_your_stripe_key':
-        # Skip payment processing for development
-        order.paid = True
-        order.payment_status = 'completed'
-        order.status = 'processing'
-        order.save()
-        messages.success(request, f'Order #{order.id} has been placed successfully! (Payment skipped for development)')
+def process_flutterwave_payment(request, order, payment_method):
+    """Process Flutterwave payment with different payment methods"""
+    # Check if Flutterwave is properly configured
+    if settings.FLUTTERWAVE_SECRET_KEY == 'FLWSECK_TEST_your_flutterwave_secret_key':
+        messages.error(request, 'Flutterwave payment processing is not configured. Please contact support.')
         return redirect('orders:order_success', order_id=order.id)
     
     # Use payment service
@@ -159,9 +151,15 @@ def process_stripe_payment(request, order, payment_method):
     result = payment_service.process_payment(request, payment_method)
     
     if result['success']:
+        # Store payment reference
+        order.payment_reference = result.get('payment_reference', f'FLW-{order.id}')
+        order.payment_status = 'processing'
+        order.payment_notes = f'Flutterwave payment initiated. Reference: {result.get("payment_reference", "")}'
+        order.save()
+        
         return redirect(result['redirect_url'], code=303)
     else:
-        messages.error(request, f'Payment error: {result["error"]}')
+        messages.error(request, f'Flutterwave payment error: {result["error"]}')
         return redirect('orders:order_success', order_id=order.id)
 
 
@@ -189,6 +187,12 @@ def ussd_payment(request, order_id):
                 order.payment_status = 'pending'
                 order.payment_notes = f'USSD payment pending. Code: {ussd_code}'
                 order.save()
+                
+                # Send pending payment email
+                try:
+                    send_payment_pending_email(order)
+                except Exception as e:
+                    messages.warning(request, f'USSD payment initiated but failed to send email: {e}')
                 
                 messages.success(request, f'USSD payment initiated for Order #{order.id}. Please complete the payment using the provided code.')
                 return redirect('orders:order_success', order_id=order.id)
@@ -220,6 +224,12 @@ def mobile_money_payment(request, order_id):
                 order.payment_notes = f'Mobile money payment pending. Code: {payment_code}'
                 order.save()
                 
+                # Send pending payment email
+                try:
+                    send_payment_pending_email(order)
+                except Exception as e:
+                    messages.warning(request, f'Mobile money payment initiated but failed to send email: {e}')
+                
                 messages.success(request, f'Mobile money payment initiated for Order #{order.id}. Please complete the payment using the provided code.')
                 return redirect('orders:order_success', order_id=order.id)
     
@@ -247,6 +257,12 @@ def bank_transfer_details(request, order_id):
             order.payment_status = 'pending'
             order.payment_notes = f'Bank transfer pending verification. Reference: {bank_transfer.reference_number}'
             order.save()
+            
+            # Send pending payment email
+            try:
+                send_payment_pending_email(order)
+            except Exception as e:
+                messages.warning(request, f'Bank transfer submitted but failed to send email: {e}')
             
             messages.success(request, f'Bank transfer details submitted for Order #{order.id}. We will verify your payment and confirm your order.')
             return redirect('orders:order_success', order_id=order.id)
@@ -292,44 +308,35 @@ def order_detail(request, order_id):
 
 @csrf_exempt
 @require_POST
-def stripe_webhook(request):
-    payload = request.body
-    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-
+def flutterwave_webhook(request):
+    """Handle Flutterwave webhooks"""
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
-    except ValueError as e:
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
-        return HttpResponse(status=400)
-
-    # Handle the event
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        order_id = session['metadata']['order_id']
+        # Get the webhook payload
+        payload = json.loads(request.body)
         
-        try:
-            order = Order.objects.get(id=order_id)
-            order.paid = True
-            order.payment_status = 'completed'
-            order.stripe_id = session['payment_intent']
-            order.status = 'processing'
-            order.save()
+        # Get the order from metadata
+        order_id = payload.get('data', {}).get('meta', {}).get('order_id')
+        if not order_id:
+            return HttpResponse(status=400)
+        
+        # Get the order
+        order = Order.objects.get(id=order_id)
+        
+        # Process the webhook using Flutterwave service
+        from .flutterwave_services import get_flutterwave_service
+        flutterwave_service = get_flutterwave_service(order)
+        result = flutterwave_service.process_webhook(payload)
+        
+        if result['success']:
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=400)
             
-            # Here you could add email notification logic
-            # send_order_confirmation_email(order)
-            
-        except Order.DoesNotExist:
-            return HttpResponse(status=404)
-    
-    elif event['type'] == 'payment_intent.payment_failed':
-        session = event['data']['object']
-        # Handle failed payment
-        pass
-
-    return HttpResponse(status=200)
+    except Order.DoesNotExist:
+        return HttpResponse(status=404)
+    except Exception as e:
+        print(f"Flutterwave webhook error: {e}")
+        return HttpResponse(status=500)
 
 
 # Optional: Add a view to handle payment status checks

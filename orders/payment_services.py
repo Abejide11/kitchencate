@@ -3,13 +3,22 @@ import json
 from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import redirect
-import stripe
+from .flutterwave_services import get_flutterwave_service
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
+
+class FlutterwavePaymentService:
+    """Flutterwave payment service wrapper"""
+    
+    def __init__(self, order):
+        self.flutterwave_service = get_flutterwave_service(order)
+    
+    def process_payment(self, request, payment_method):
+        """Process payment with Flutterwave"""
+        return self.flutterwave_service.create_payment_link(request, payment_method)
 
 
 class PaymentService:
-    """Base payment service class"""
+    """Base payment service class for local payment methods"""
     
     def __init__(self, order):
         self.order = order
@@ -22,7 +31,7 @@ class PaymentService:
             {'code': 'vodafone_cash', 'name': 'Vodafone Cash', 'ussd': '*110*'}
         ]
     
-    def process_payment(self, request):
+    def process_payment(self, request, payment_method):
         """Process payment - to be implemented by subclasses"""
         raise NotImplementedError
     
@@ -58,13 +67,14 @@ class PaymentService:
                 f'Use reference: ORDER-{self.order.id}',
                 'Keep the transaction receipt'
             ]
-        } 
+        }
 
 
 def get_payment_service(order, payment_method=None):
     """
     Factory function to get the appropriate payment service based on payment_method.
-    For now, only PaymentService is implemented. Extend this as needed.
     """
-    # Example: if payment_method == 'stripe': return StripePaymentService(order)
-    return PaymentService(order) 
+    if payment_method.startswith('flutterwave_'):
+        return FlutterwavePaymentService(order)
+    else:
+        return PaymentService(order) 
