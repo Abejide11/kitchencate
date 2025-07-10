@@ -121,8 +121,9 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 
 # ✅ Updated Allauth configuration (no deprecations)
-ACCOUNT_LOGIN_METHODS = {'email'}  # Login with email only
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # Signup fields
+ACCOUNT_EMAIL_REQUIRED = True  # Require email for signup
+ACCOUNT_USERNAME_REQUIRED = False  # Don't require username
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  # Login with email only
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Require email confirmation
 
 # Redirects
