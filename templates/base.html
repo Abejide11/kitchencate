@@ -755,10 +755,12 @@
                 <img src="{% static 'images/kitchencrae-logo.svg' %}" alt="KitchenCrate Logo" style="height: 40px; margin-right: 10px;">
                 <span class="text-white d-none d-sm-inline">KitchenCrate</span>
             </a>
+            {% if user.is_authenticated %}
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            {% endif %}
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
