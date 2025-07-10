@@ -130,6 +130,9 @@ ACCOUNT_EMAIL_REQUIRED = True  # Require email for signup
 ACCOUNT_USERNAME_REQUIRED = False  # Don't require username
 ACCOUNT_AUTHENTICATION_METHOD = 'email'  # Login with email only
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Require email confirmation
+ACCOUNT_UNIQUE_EMAIL = True  # Ensure email uniqueness
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3  # Email confirmation expires in 3 days
+ACCOUNT_EMAIL_CONFIRMATION_HMAC = True  # Use HMAC for email confirmation
 
 # Redirects
 LOGIN_URL = reverse_lazy('user:login')  # Your custom login view

@@ -17,30 +17,32 @@
                     <!-- Personal Information -->
                     <h6 class="mb-3"><i class="fas fa-user me-2"></i>Personal Information</h6>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-12 mb-3">
                             {{ form.first_name|as_crispy_field }}
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-12 mb-3">
                             {{ form.last_name|as_crispy_field }}
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-12 mb-3">
                             {{ form.email|as_crispy_field }}
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-12 mb-3">
                             {{ form.phone|as_crispy_field }}
                         </div>
                     </div>
                     
                     <!-- Delivery Address -->
                     <h6 class="mb-3 mt-4"><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h6>
-                    {{ form.address|as_crispy_field }}
+                    <div class="mb-3">
+                        {{ form.address|as_crispy_field }}
+                    </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-12 mb-3">
                             {{ form.city|as_crispy_field }}
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-12 mb-3">
                             {{ form.postal_code|as_crispy_field }}
                         </div>
                     </div>
@@ -49,7 +51,7 @@
                     <h6 class="mb-3 mt-4"><i class="fas fa-credit-card me-2"></i>Payment Method</h6>
                     <div class="payment-methods">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 col-12 mb-3">
                                 <div class="payment-option" data-method="card">
                                     <input type="radio" name="payment_method" value="card" id="card" class="payment-radio" checked>
                                     <label for="card" class="payment-label">
@@ -64,7 +66,7 @@
                                 </div>
                             </div>
                             
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 col-12 mb-3">
                                 <div class="payment-option" data-method="bank_transfer">
                                     <input type="radio" name="payment_method" value="bank_transfer" id="bank_transfer" class="payment-radio">
                                     <label for="bank_transfer" class="payment-label">
@@ -79,11 +81,7 @@
                                 </div>
                             </div>
                             
-
-                            
-
-                            
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 col-12 mb-3">
                                 <div class="payment-option" data-method="ussd">
                                     <input type="radio" name="payment_method" value="ussd" id="ussd" class="payment-radio">
                                     <label for="ussd" class="payment-label">
@@ -98,7 +96,7 @@
                                 </div>
                             </div>
                             
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 col-12 mb-3">
                                 <div class="payment-option" data-method="mobile_money">
                                     <input type="radio" name="payment_method" value="mobile_money" id="mobile_money" class="payment-radio">
                                     <label for="mobile_money" class="payment-label">
@@ -112,16 +110,14 @@
                                     </label>
                                 </div>
                             </div>
-                            
-
                         </div>
                     </div>
                     
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-success btn-lg">
+                    <div class="mt-4 d-grid gap-2 d-md-block">
+                        <button type="submit" class="btn btn-success btn-lg w-100 w-md-auto">
                             <i class="fas fa-lock me-2"></i>Proceed to Payment
                         </button>
-                        <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline-secondary ms-2">
+                        <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline-secondary w-100 w-md-auto mt-2 mt-md-0 ms-md-2">
                             <i class="fas fa-arrow-left me-2"></i>Back to Cart
                         </a>
                     </div>
@@ -149,52 +145,104 @@
     </div>
 
     <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Order Summary</h5>
-            </div>
-            <div class="card-body">
-                {% for item in cart %}
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h6 class="mb-0">{{ item.product.name }}</h6>
-                        <small class="text-muted">Qty: {{ item.quantity }}</small>
+        <!-- Desktop Order Summary -->
+        <div class="d-none d-lg-block">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in cart %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-0">{{ item.product.name }}</h6>
+                            <small class="text-muted">Qty: {{ item.quantity }}</small>
+                        </div>
+                        <span>₦{{ item.total_price }}</span>
                     </div>
-                    <span>₦{{ item.total_price }}</span>
+                    {% endfor %}
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>₦{{ cart.get_total_price }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Delivery:</span>
+                        <span class="text-success">Free</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong class="h5 text-primary mb-0">₦{{ cart.get_total_price }}</strong>
+                    </div>
                 </div>
-                {% endfor %}
-                <hr>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Subtotal:</span>
-                    <span>₦{{ cart.get_total_price }}</span>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Secure Payment</h6>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Delivery:</span>
-                    <span class="text-success">Free</span>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between">
-                    <strong>Total:</strong>
-                    <strong class="h5 text-primary mb-0">₦{{ cart.get_total_price }}</strong>
+                <div class="card-body">
+                    <p class="small text-muted mb-2">
+                        <i class="fas fa-lock me-1"></i>
+                        Your payment information is secure and encrypted.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <i class="fab fa-cc-visa fa-2x text-primary"></i>
+                        <i class="fab fa-cc-mastercard fa-2x text-primary"></i>
+                        <i class="fab fa-cc-amex fa-2x text-primary"></i>
+                        <i class="fab fa-cc-discover fa-2x text-primary"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Payment Information -->
-        <div class="card mt-3">
-            <div class="card-header">
-                <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Secure Payment</h6>
+        <!-- Mobile Order Summary -->
+        <div class="d-lg-none mt-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Order Summary</h6>
+                </div>
+                <div class="card-body">
+                    {% for item in cart %}
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="flex-grow-1 me-3">
+                            <h6 class="mb-1 small">{{ item.product.name }}</h6>
+                            <small class="text-muted">Qty: {{ item.quantity }}</small>
+                        </div>
+                        <span class="fw-bold">₦{{ item.total_price }}</span>
+                    </div>
+                    {% endfor %}
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>₦{{ cart.get_total_price }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Delivery:</span>
+                        <span class="text-success">Free</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong class="h6 text-primary mb-0">₦{{ cart.get_total_price }}</strong>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <p class="small text-muted mb-2">
-                    <i class="fas fa-lock me-1"></i>
-                    Your payment information is secure and encrypted.
-                </p>
-                <div class="d-flex gap-2">
-                    <i class="fab fa-cc-visa fa-2x text-primary"></i>
-                    <i class="fab fa-cc-mastercard fa-2x text-primary"></i>
-                    <i class="fab fa-cc-amex fa-2x text-primary"></i>
-                    <i class="fab fa-cc-discover fa-2x text-primary"></i>
+
+            <!-- Mobile Payment Info -->
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <p class="small text-muted mb-2">
+                        <i class="fas fa-lock me-1"></i>
+                        Secure & Encrypted Payment
+                    </p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <i class="fab fa-cc-visa fa-lg text-primary"></i>
+                        <i class="fab fa-cc-mastercard fa-lg text-primary"></i>
+                        <i class="fab fa-cc-amex fa-lg text-primary"></i>
+                    </div>
                 </div>
             </div>
         </div>

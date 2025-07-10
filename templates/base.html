@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mobile CSS -->
+    <link rel="stylesheet" href="{% static 'css/mobile.css' %}">
     <!-- Custom CSS -->
     <style>
         :root {
@@ -512,17 +514,20 @@
             .btn {
                 padding: 10px 20px;
                 font-size: 0.9rem;
+                min-height: 44px; /* Better touch target */
             }
             
             .btn-lg {
                 padding: 12px 24px;
                 font-size: 1rem;
+                min-height: 48px;
             }
             
             /* Form Adjustments */
             .form-control {
                 padding: 12px 16px;
                 font-size: 16px; /* Prevents zoom on iOS */
+                min-height: 44px; /* Better touch target */
             }
             
             .form-label {
@@ -540,6 +545,7 @@
                 padding: 6px 10px;
                 border-radius: 8px;
                 transition: all 0.3s ease;
+                min-height: 44px; /* Better touch target */
             }
             
             .navbar-toggler:hover {
@@ -573,6 +579,9 @@
                 transition: all 0.3s ease;
                 font-weight: 500;
                 color: white !important;
+                min-height: 44px; /* Better touch target */
+                display: flex;
+                align-items: center;
             }
             
             .navbar-nav .nav-link:hover {
@@ -601,6 +610,9 @@
                 margin: 2px 0;
                 transition: all 0.3s ease;
                 font-size: 0.9rem;
+                min-height: 44px; /* Better touch target */
+                display: flex;
+                align-items: center;
             }
             
             .dropdown-item:hover {
@@ -648,6 +660,20 @@
                 margin-bottom: 1rem;
             }
             
+            .footer .row > div {
+                margin-bottom: 1.5rem;
+            }
+            
+            .footer p {
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+            
+            .footer a {
+                font-size: 0.9rem;
+                padding: 0.25rem 0;
+            }
+            
             /* Utility Classes */
             .d-none-mobile {
                 display: none !important;
@@ -680,6 +706,116 @@
             .filter-buttons .btn {
                 font-size: 0.8rem;
                 padding: 6px 12px;
+            }
+            
+            /* Hero Section Mobile Optimization */
+            .hero-section {
+                padding: 2rem 0;
+                margin-bottom: 2rem;
+            }
+            
+            .hero-section .bg-gradient-accent {
+                width: 200px !important;
+                height: 200px !important;
+                padding: 3rem !important;
+            }
+            
+            .hero-section .fa-5x {
+                font-size: 3rem !important;
+            }
+            
+            /* Sidebar Mobile Optimization */
+            .sticky-top {
+                position: relative !important;
+                top: 0 !important;
+                margin-bottom: 1rem;
+            }
+            
+                    /* Payment Options Mobile */
+        .payment-option {
+            margin-bottom: 1rem;
+        }
+        
+        .payment-label {
+            padding: 1rem;
+            min-height: 80px;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            background: var(--white);
+        }
+        
+        .payment-label:hover {
+            border-color: var(--primary-color);
+            background: var(--accent-color);
+        }
+        
+        .payment-radio:checked + .payment-label {
+            border-color: var(--primary-color);
+            background: var(--accent-color);
+            box-shadow: 0 4px 15px rgba(139, 90, 60, 0.15);
+        }
+        
+        .payment-icon {
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: var(--light-bg);
+            border-radius: 10px;
+        }
+        
+        .payment-info {
+            flex: 1;
+        }
+        
+        .payment-info h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+        
+        .payment-info small {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+        
+        /* Hide radio buttons but keep them accessible */
+        .payment-radio {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+            
+            /* Order Summary Mobile */
+            .order-summary {
+                margin-top: 1rem;
+            }
+            
+            /* Mobile-specific enhancements */
+            .mobile-full-width {
+                width: 100% !important;
+            }
+            
+            .mobile-stack {
+                flex-direction: column !important;
+            }
+            
+            .mobile-center {
+                text-align: center !important;
+            }
+            
+            /* Touch-friendly spacing */
+            .touch-spacing > * {
+                margin-bottom: 0.75rem;
+            }
+            
+            .touch-spacing > *:last-child {
+                margin-bottom: 0;
             }
         }
         
@@ -724,6 +860,248 @@
             .navbar-nav .nav-link {
                 padding: 12px 14px;
                 font-size: 0.9rem;
+            }
+            
+            /* Extra small specific adjustments */
+            .hero-section .bg-gradient-accent {
+                width: 150px !important;
+                height: 150px !important;
+                padding: 2rem !important;
+            }
+            
+            .hero-section .fa-5x {
+                font-size: 2.5rem !important;
+            }
+            
+            /* Table responsive for very small screens */
+            .table-responsive {
+                font-size: 0.8rem;
+            }
+            
+            .table-responsive .btn {
+                padding: 4px 8px;
+                font-size: 0.75rem;
+            }
+            
+            /* Form controls for very small screens */
+            .form-control {
+                font-size: 16px; /* Prevents zoom */
+                padding: 10px 12px;
+            }
+            
+            /* Payment options for very small screens */
+            .payment-label {
+                padding: 0.75rem;
+                min-height: 70px;
+            }
+            
+            .payment-icon {
+                font-size: 1.5rem !important;
+            }
+            
+            /* Cart items for very small screens */
+            .cart-item-image {
+                width: 50px !important;
+                height: 50px !important;
+            }
+            
+            /* Product cards for very small screens */
+            .product-card .card-body {
+                padding: 0.75rem;
+            }
+            
+            .product-title {
+                font-size: 1.1rem;
+            }
+            
+            .product-price {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* Landscape Mobile Optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .hero-section {
+                padding: 1.5rem 0;
+            }
+            
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            
+            .navbar {
+                padding: 0.25rem 0;
+            }
+            
+            .card-img-top {
+                height: 140px;
+            }
+        }
+        
+        /* High DPI Mobile Devices */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .card-img-top {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        /* Mobile Performance Optimizations */
+        @media (max-width: 768px) {
+            /* Reduce animations on mobile for better performance */
+            .card:hover {
+                transform: none;
+                box-shadow: 0 8px 30px rgba(139, 90, 60, 0.08);
+            }
+            
+            .btn:hover {
+                transform: none;
+            }
+            
+            .nav-link:hover {
+                transform: none;
+            }
+            
+            /* Optimize for mobile scrolling */
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* Better mobile form handling */
+            input[type="email"],
+            input[type="tel"],
+            input[type="text"],
+            input[type="number"],
+            textarea {
+                -webkit-appearance: none;
+                border-radius: 15px;
+            }
+            
+            /* Mobile-specific button states */
+            .btn:active {
+                transform: scale(0.98);
+            }
+            
+            /* Mobile navigation improvements */
+            .navbar-nav .nav-link:active {
+                background-color: rgba(255, 255, 255, 0.25);
+            }
+            
+            /* Enhanced touch targets */
+            .btn-sm {
+                min-height: 40px;
+                padding: 8px 16px;
+            }
+            
+            /* Better mobile spacing */
+            .card-body {
+                padding: 1.25rem;
+            }
+            
+            /* Mobile-specific grid adjustments */
+            .row-cols-1 > * {
+                margin-bottom: 1rem;
+            }
+            
+            /* Mobile payment options */
+            .payment-option {
+                margin-bottom: 0.75rem;
+            }
+            
+            .payment-label {
+                padding: 1.25rem;
+                min-height: 90px;
+            }
+            
+            /* Mobile cart improvements */
+            .cart-item-image {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            
+            /* Mobile product cards */
+            .product-card .card-body {
+                padding: 1rem;
+            }
+            
+            .product-card .btn {
+                margin-top: 0.5rem;
+            }
+            
+            /* Mobile form improvements */
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            
+            /* Mobile table improvements */
+            .table td, .table th {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            /* Mobile badge improvements */
+            .badge {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.75rem;
+            }
+            
+            /* Mobile icon improvements */
+            .fa-2x {
+                font-size: 1.5rem !important;
+            }
+            
+            .fa-3x {
+                font-size: 2rem !important;
+            }
+            
+            .fa-5x {
+                font-size: 3rem !important;
+            }
+            
+            /* Mobile accessibility improvements */
+            .btn:focus,
+            .form-control:focus,
+            .nav-link:focus {
+                outline: 2px solid var(--primary-color);
+                outline-offset: 2px;
+            }
+            
+            /* Mobile loading states */
+            .btn.loading {
+                pointer-events: none;
+                opacity: 0.7;
+            }
+            
+            /* Mobile error states */
+            .form-control.is-invalid {
+                border-color: var(--danger-color);
+                box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+            }
+            
+            /* Mobile success states */
+            .form-control.is-valid {
+                border-color: var(--success-color);
+                box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+            }
+            
+            /* Mobile tooltip improvements */
+            [title] {
+                position: relative;
+            }
+            
+            /* Mobile modal improvements */
+            .modal-dialog {
+                margin: 1rem;
+            }
+            
+            .modal-content {
+                border-radius: 15px;
+            }
+            
+            /* Mobile dropdown improvements */
+            .dropdown-menu {
+                max-height: 300px;
+                overflow-y: auto;
             }
         }
 
@@ -865,7 +1243,111 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Mobile JS -->
+    <script src="{% static 'js/mobile.js' %}"></script>
     <!-- Custom JS -->
+    <script>
+        // Mobile-specific enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add touch feedback for mobile buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+                
+                button.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+            
+            // Enhance payment option selection
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            paymentOptions.forEach(option => {
+                const label = option.querySelector('.payment-label');
+                const radio = option.querySelector('.payment-radio');
+                
+                if (label && radio) {
+                    label.addEventListener('click', function() {
+                        radio.checked = true;
+                        // Remove active class from all options
+                        paymentOptions.forEach(opt => {
+                            opt.classList.remove('active');
+                        });
+                        // Add active class to selected option
+                        option.classList.add('active');
+                    });
+                }
+            });
+            
+            // Mobile navigation improvements
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            
+            if (navbarToggler && navbarCollapse) {
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navbarToggler.contains(e.target) && !navbarCollapse.contains(e.target)) {
+                        if (navbarCollapse.classList.contains('show')) {
+                            navbarToggler.click();
+                        }
+                    }
+                });
+                
+                // Close mobile menu when clicking on a link
+                const navLinks = navbarCollapse.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        if (navbarCollapse.classList.contains('show')) {
+                            navbarToggler.click();
+                        }
+                    });
+                });
+            }
+            
+            // Prevent zoom on input focus (iOS)
+            const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="number"], textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    if (window.innerWidth <= 768) {
+                        this.style.fontSize = '16px';
+                    }
+                });
+            });
+            
+            // Smooth scrolling for mobile
+            const smoothScrollLinks = document.querySelectorAll('a[href^="#"]');
+            smoothScrollLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#') {
+                        const target = document.querySelector(href);
+                        if (target) {
+                            e.preventDefault();
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Mobile performance optimizations
+        if (window.innerWidth <= 768) {
+            // Reduce motion for better performance
+            document.documentElement.style.setProperty('--reduced-motion', 'reduce');
+            
+            // Optimize images for mobile
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                if (img.dataset.mobileSrc) {
+                    img.src = img.dataset.mobileSrc;
+                }
+            });
+        }
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html> 

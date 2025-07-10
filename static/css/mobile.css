@@ -1,0 +1,301 @@
+/* Mobile-specific enhancements for KitchenCrate */
+
+/* Mobile-first approach */
+@media (max-width: 768px) {
+    /* Improved mobile navigation */
+    .navbar-brand {
+        font-size: 1.3rem !important;
+    }
+    
+    .navbar-brand img {
+        height: 30px !important;
+    }
+    
+    /* Mobile menu improvements */
+    .navbar-collapse {
+        background: rgba(139, 90, 60, 0.95) !important;
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        margin-top: 10px;
+        padding: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Mobile product grid */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+    
+    /* Mobile cart improvements */
+    .cart-item {
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 0;
+    }
+    
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+    
+    /* Mobile form improvements */
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .form-floating > .form-control {
+        padding: 1rem 0.75rem;
+        height: 60px;
+    }
+    
+    .form-floating > label {
+        padding: 1rem 0.75rem;
+    }
+    
+    /* Mobile button improvements */
+    .btn-group-vertical .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-group-vertical .btn:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Mobile card improvements */
+    .card-deck {
+        display: block;
+    }
+    
+    .card-deck .card {
+        margin-bottom: 1rem;
+    }
+    
+    /* Mobile table improvements */
+    .table-responsive {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    /* Mobile pagination improvements */
+    .pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .pagination .page-link {
+        margin: 2px;
+        min-width: 44px;
+        text-align: center;
+    }
+    
+    /* Mobile search improvements */
+    .search-box {
+        position: relative;
+    }
+    
+    .search-box .form-control {
+        padding-right: 50px;
+    }
+    
+    .search-box .btn {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Mobile filter improvements */
+    .filter-section {
+        background: var(--light-bg);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .filter-buttons .btn {
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+    }
+    
+    /* Mobile order summary improvements */
+    .order-summary-mobile {
+        position: sticky;
+        bottom: 0;
+        background: var(--white);
+        border-top: 2px solid var(--border-color);
+        padding: 1rem;
+        z-index: 1000;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Mobile payment improvements */
+    .payment-method-mobile {
+        border: 2px solid var(--border-color);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .payment-method-mobile.selected {
+        border-color: var(--primary-color);
+        background: var(--accent-color);
+    }
+    
+    /* Mobile loading improvements */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--white);
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Mobile toast improvements */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+    }
+    
+    .toast {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Mobile modal improvements */
+    .modal-fullscreen {
+        padding: 0 !important;
+    }
+    
+    .modal-fullscreen .modal-dialog {
+        max-width: none;
+        margin: 0;
+        height: 100%;
+    }
+    
+    .modal-fullscreen .modal-content {
+        border-radius: 0;
+        height: 100%;
+    }
+    
+    /* Mobile image improvements */
+    .img-fluid {
+        border-radius: 10px;
+    }
+    
+    /* Mobile text improvements */
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    /* Mobile spacing utilities */
+    .mobile-mt-0 { margin-top: 0 !important; }
+    .mobile-mb-0 { margin-bottom: 0 !important; }
+    .mobile-pt-0 { padding-top: 0 !important; }
+    .mobile-pb-0 { padding-bottom: 0 !important; }
+    
+    /* Mobile visibility utilities */
+    .mobile-hidden { display: none !important; }
+    .mobile-visible { display: block !important; }
+    
+    /* Mobile flex utilities */
+    .mobile-flex-column { flex-direction: column !important; }
+    .mobile-flex-row { flex-direction: row !important; }
+    .mobile-justify-center { justify-content: center !important; }
+    .mobile-align-center { align-items: center !important; }
+}
+
+/* Extra small devices */
+@media (max-width: 576px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-buttons .btn {
+        min-width: 100px;
+        font-size: 0.8rem;
+    }
+    
+    .search-box .btn {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+}
+
+/* Landscape orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    .navbar {
+        padding: 0.25rem 0;
+    }
+    
+    .hero-section {
+        padding: 1rem 0;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .img-fluid {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --light-bg: #1a1a1a;
+        --white: #2d2d2d;
+        --text-dark: #ffffff;
+        --text-light: #cccccc;
+        --border-color: #404040;
+    }
+} 
