@@ -2,6 +2,68 @@
 
 {% block title %}Order Confirmation{% endblock %}
 
+{% block extra_js %}
+<script>
+function checkPaymentStatus() {
+    const checkBtn = event.target;
+    const originalText = checkBtn.innerHTML;
+    
+    // Show loading state
+    checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Checking...';
+    checkBtn.disabled = true;
+    
+    // Simulate payment status check (in real app, this would be an AJAX call)
+    setTimeout(() => {
+        // For demo purposes, we'll show a random result
+        const isPaid = Math.random() > 0.7; // 30% chance of being paid
+        
+        if (isPaid) {
+            showAlert('Payment confirmed! Your order is being processed.', 'success');
+            // Reload page to show updated status
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else {
+            showAlert('Payment still pending. Please complete your payment.', 'warning');
+        }
+        
+        // Reset button
+        checkBtn.innerHTML = originalText;
+        checkBtn.disabled = false;
+    }, 2000);
+}
+
+function showAlert(message, type = 'info') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// Auto-check payment status every 30 seconds for pending payments
+{% if not order.paid %}
+    {% if order.payment_method == 'mobile_money' or order.payment_method == 'ussd' %}
+    setInterval(() => {
+        console.log('Auto-checking payment status...');
+        // In a real implementation, this would make an AJAX call to check payment status
+    }, 30000);
+    {% endif %}
+{% endif %}
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-10">
@@ -128,10 +190,62 @@
                 
                 {% if not order.paid %}
                 <div class="mt-4">
+                    {% if order.payment_method == 'mobile_money' %}
+                    <div class="alert alert-warning">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-mobile-alt me-2"></i>
+                                    <strong>Mobile Money Payment Pending</strong>
+                                </h6>
+                                <p class="mb-2">Please complete your mobile money payment using the USSD code provided.</p>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'orders:mobile_money_payment' order.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-mobile-alt me-1"></i>Complete Payment
+                                    </a>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="checkPaymentStatus()">
+                                        <i class="fas fa-sync-alt me-1"></i>Check Status
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-warning p-3 rounded-circle">
+                                    <i class="fas fa-clock text-white" style="font-size: 2rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% elif order.payment_method == 'ussd' %}
+                    <div class="alert alert-warning">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-phone me-2"></i>
+                                    <strong>USSD Payment Pending</strong>
+                                </h6>
+                                <p class="mb-2">Please complete your USSD payment using the code provided.</p>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'orders:ussd_payment' order.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-phone me-1"></i>Complete Payment
+                                    </a>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="checkPaymentStatus()">
+                                        <i class="fas fa-sync-alt me-1"></i>Check Status
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-warning p-3 rounded-circle">
+                                    <i class="fas fa-clock text-white" style="font-size: 2rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
                         <strong>Payment Processing:</strong> Your payment is being processed. You'll receive an email confirmation once it's complete.
                     </div>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>

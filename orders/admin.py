@@ -53,12 +53,10 @@ class OrderAdmin(admin.ModelAdmin):
         icons = {
             'card': '💳',
             'bank_transfer': '🏦',
-            'cash_on_delivery': '💵',
+    
             'ussd': '📱',
             'mobile_money': '📲',
-            'paystack': '🔗',
-            'flutterwave': '🌊',
-            'paypal': '🔵',
+            
             'apple_pay': '🍎',
             'google_pay': '🤖'
         }

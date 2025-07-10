@@ -16,14 +16,10 @@ class Order(models.Model):
     PAYMENT_METHOD_CHOICES = [
         ('card', 'Credit/Debit Card'),
         ('bank_transfer', 'Bank Transfer'),
-        ('cash_on_delivery', 'Cash on Delivery'),
-        ('paypal', 'PayPal'),
         ('apple_pay', 'Apple Pay'),
         ('google_pay', 'Google Pay'),
         ('ussd', 'USSD Payment'),
         ('mobile_money', 'Mobile Money'),
-        ('paystack', 'Paystack'),
-        ('flutterwave', 'Flutterwave'),
     ]
     
     PAYMENT_STATUS_CHOICES = [
@@ -71,14 +67,10 @@ class Order(models.Model):
         method_names = {
             'card': 'Credit/Debit Card',
             'bank_transfer': 'Bank Transfer',
-            'cash_on_delivery': 'Cash on Delivery',
-            'paypal': 'PayPal',
             'apple_pay': 'Apple Pay',
             'google_pay': 'Google Pay',
             'ussd': 'USSD Payment',
             'mobile_money': 'Mobile Money',
-            'paystack': 'Paystack',
-            'flutterwave': 'Flutterwave',
         }
         return method_names.get(self.payment_method, self.payment_method.title())
 

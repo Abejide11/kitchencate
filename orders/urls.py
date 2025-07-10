@@ -12,8 +12,7 @@ urlpatterns = [
     path('bank-transfer/<int:order_id>/', views.bank_transfer_details, name='bank_transfer_details'),
     path('ussd-payment/<int:order_id>/', views.ussd_payment, name='ussd_payment'),
     path('mobile-money-payment/<int:order_id>/', views.mobile_money_payment, name='mobile_money_payment'),
-    path('paystack/verify/', views.paystack_verify, name='paystack_verify'),
-    path('flutterwave/webhook/', views.flutterwave_webhook, name='flutterwave_webhook'),
+
     path('webhook/stripe/', views.stripe_webhook, name='stripe_webhook'),
     path('check-payment/<int:order_id>/', views.check_payment_status, name='check_payment_status'),
 ] 

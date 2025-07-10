@@ -271,6 +271,73 @@
                                 </div>
                             </div>
 
+                            <!-- Payment Confirmation Modal -->
+                            <div class="modal fade" id="paymentConfirmationModal" tabindex="-1" aria-labelledby="paymentConfirmationModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-success text-white">
+                                            <h5 class="modal-title" id="paymentConfirmationModalLabel">
+                                                <i class="fas fa-check-circle me-2"></i>Payment Code Generated
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="text-center mb-4">
+                                                <div class="d-inline-flex align-items-center justify-content-center bg-success p-3 rounded-circle mb-3">
+                                                    <i class="fas fa-mobile-alt text-white" style="font-size: 2rem;"></i>
+                                                </div>
+                                                <h4 class="text-success mb-2">Payment Code Ready!</h4>
+                                                <p class="text-muted">Use the code below to complete your payment</p>
+                                            </div>
+                                            
+                                            <div class="alert alert-info border-0 mb-4">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-8">
+                                                        <h6 class="mb-1"><i class="fas fa-code me-2"></i>Your USSD Code:</h6>
+                                                        <div class="bg-light p-3 rounded">
+                                                            <code id="generatedCode" class="fs-5 fw-bold text-primary"></code>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 text-end">
+                                                        <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard()">
+                                                            <i class="fas fa-copy me-1"></i>Copy Code
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6><i class="fas fa-list-check me-2"></i>Payment Steps:</h6>
+                                                    <ol class="mb-0">
+                                                        <li>Dial the USSD code on your phone</li>
+                                                        <li>Confirm the payment amount</li>
+                                                        <li>Enter your PIN when prompted</li>
+                                                        <li>Wait for confirmation SMS</li>
+                                                    </ol>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6><i class="fas fa-info-circle me-2"></i>Payment Details:</h6>
+                                                    <ul class="list-unstyled mb-0">
+                                                        <li><strong>Amount:</strong> ₦{{ order.get_total_cost|floatformat:2 }}</li>
+                                                        <li><strong>Reference:</strong> ORDER-{{ order.id }}</li>
+                                                        <li><strong>Provider:</strong> <span id="selectedProviderName"></span></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="fas fa-times me-2"></i>Close
+                                            </button>
+                                            <a href="{% url 'orders:order_success' order.id %}" class="btn btn-success">
+                                                <i class="fas fa-check me-2"></i>I've Completed Payment
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Action Buttons -->
                             <div class="d-grid gap-3 d-md-flex justify-content-md-end">
                                 <a href="{% url 'orders:order_success' order.id %}" 
@@ -526,28 +593,99 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Form submission with enhanced feedback
+    // Form submission with enhanced feedback and modal
     document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         const provider = providerSelect.value;
         const phone = phoneInput.value;
         
         if (!provider || !phone || phone.length !== 11) {
-            e.preventDefault();
-            alert('Please select a provider and enter a valid 11-digit phone number.');
+            showAlert('Please select a provider and enter a valid 11-digit phone number.', 'warning');
             return false;
         }
         
         // Show loading state
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating Code...';
         submitBtn.disabled = true;
         
-        // Re-enable after 3 seconds if form doesn't submit
+        // Simulate code generation (in real app, this would be an AJAX call)
         setTimeout(() => {
+            // Generate the payment code
+            const providerData = providerData[provider];
+            const amount = {{ order.get_total_cost }};
+            const generatedCode = `${providerData.ussd.replace('[Phone]', phone).replace('[Amount]', amount)}`;
+            
+            // Update modal content
+            document.getElementById('generatedCode').textContent = generatedCode;
+            document.getElementById('selectedProviderName').textContent = providerData.name;
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('paymentConfirmationModal'));
+            modal.show();
+            
+            // Reset button
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
-        }, 3000);
+        }, 2000);
+    });
+    
+    // Copy to clipboard function
+    window.copyToClipboard = function() {
+        const codeElement = document.getElementById('generatedCode');
+        const text = codeElement.textContent;
+        
+        navigator.clipboard.writeText(text).then(function() {
+            showAlert('Payment code copied to clipboard!', 'success');
+        }).catch(function(err) {
+            console.error('Could not copy text: ', err);
+            showAlert('Failed to copy code. Please copy manually.', 'warning');
+        });
+    };
+    
+    // Show alert function
+    function showAlert(message, type = 'info') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    // Add success animation to provider cards
+    providerCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Add click animation
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+    });
+    
+    // Add phone number formatting
+    phoneInput.addEventListener('blur', function() {
+        const value = this.value.replace(/\D/g, '');
+        if (value.length === 11) {
+            this.value = value.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3');
+        }
+    });
+    
+    phoneInput.addEventListener('focus', function() {
+        this.value = this.value.replace(/\s/g, '');
     });
 });
 </script>

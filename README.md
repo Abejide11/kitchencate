@@ -29,29 +29,15 @@ A comprehensive Django-based e-commerce platform focused on Nigerian food delive
 - **Process**: Pay when you receive your order
 - **Features**: Automatic order confirmation, delivery tracking
 
-#### 4. PayPal
-- **Process**: PayPal account payment
-- **Features**: International payment support, secure checkout
-
-#### 5. USSD Payment
+#### 4. USSD Payment
 - **Supported Banks**: GT Bank, Zenith, Access, First Bank, UBA, Fidelity, Ecobank, Stanbic, Union, Wema
 - **Process**: Dial USSD code → Enter PIN → Confirm payment
 - **Features**: Real-time code generation, bank-specific instructions
 
-#### 6. Mobile Money
+#### 5. Mobile Money
 - **Providers**: Paga, OPay, Airtel Money, MTN MoMo, Vodafone Cash
 - **Process**: Dial provider code → Enter phone → Confirm payment
 - **Features**: Provider-specific codes, colorful UI, real-time validation
-
-#### 7. Paystack
-- **Process**: Nigerian payment gateway
-- **Features**: Card payments, bank transfers, USSD, QR codes
-- **Integration**: Webhook verification, payment status tracking
-
-#### 8. Flutterwave
-- **Process**: African payment gateway
-- **Features**: Multiple payment options, international cards
-- **Integration**: Webhook handling, transaction verification
 
 ## 🚀 Quick Start
 
@@ -121,20 +107,7 @@ STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_key
 STRIPE_SECRET_KEY=sk_test_your_stripe_key
 STRIPE_WEBHOOK_SECRET=whsec_your_stripe_webhook_secret
 
-# Paystack
-PAYSTACK_SECRET_KEY=sk_test_your_paystack_key
-PAYSTACK_PUBLIC_KEY=pk_test_your_paystack_key
-PAYSTACK_WEBHOOK_SECRET=whsec_your_paystack_webhook_secret
 
-# PayPal
-PAYPAL_CLIENT_ID=your_paypal_client_id
-PAYPAL_CLIENT_SECRET=your_paypal_client_secret
-PAYPAL_SANDBOX=True
-
-# Flutterwave
-FLUTTERWAVE_SECRET_KEY=your_flutterwave_secret_key
-FLUTTERWAVE_PUBLIC_KEY=your_flutterwave_public_key
-FLUTTERWAVE_WEBHOOK_SECRET=whsec_your_flutterwave_webhook_secret
 ```
 
 ### Payment Gateway Setup
@@ -145,23 +118,7 @@ FLUTTERWAVE_WEBHOOK_SECRET=whsec_your_flutterwave_webhook_secret
 3. Set up webhook endpoint: `https://yourdomain.com/orders/webhook/stripe/`
 4. Add webhook events: `checkout.session.completed`
 
-#### 2. Paystack Setup
-1. Create account at [paystack.com](https://paystack.com)
-2. Get API keys from Dashboard
-3. Set up webhook endpoint: `https://yourdomain.com/orders/paystack/verify/`
-4. Add webhook events: `charge.success`
 
-#### 3. PayPal Setup
-1. Create account at [paypal.com](https://paypal.com)
-2. Get API credentials from Developer Dashboard
-3. Set up webhook endpoint: `https://yourdomain.com/orders/paypal/webhook/`
-4. Add webhook events: `PAYMENT.CAPTURE.COMPLETED`
-
-#### 4. Flutterwave Setup
-1. Create account at [flutterwave.com](https://flutterwave.com)
-2. Get API keys from Dashboard
-3. Set up webhook endpoint: `https://yourdomain.com/orders/flutterwave/webhook/`
-4. Add webhook events: `charge.completed`
 
 ## 🧪 Testing Payment Methods
 
@@ -177,11 +134,7 @@ FLUTTERWAVE_WEBHOOK_SECRET=whsec_your_flutterwave_webhook_secret
    - Expiry: Any future date
    - CVC: Any 3 digits
 
-3. **Paystack Test**
-   - Use test API keys
-   - Test with sample phone numbers
-
-4. **USSD Testing**
+3. **USSD Testing**
    - Use any 10-digit account number
    - Test with different bank codes
 

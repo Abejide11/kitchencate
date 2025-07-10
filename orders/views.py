@@ -113,23 +113,12 @@ def order_create(request):
             
             if payment_method == 'bank_transfer':
                 return redirect('orders:bank_transfer_details', order_id=order.id)
-            elif payment_method == 'cash_on_delivery':
-                # Mark as pending payment for cash on delivery
-                order.payment_status = 'pending'
-                order.payment_notes = 'Cash on delivery - payment to be collected upon delivery'
-                order.save()
-                messages.success(request, f'Order #{order.id} has been placed successfully! Please have cash ready for delivery.')
-                return redirect('orders:order_success', order_id=order.id)
+
             elif payment_method == 'ussd':
                 return redirect('orders:ussd_payment', order_id=order.id)
             elif payment_method == 'mobile_money':
                 return redirect('orders:mobile_money_payment', order_id=order.id)
-            elif payment_method == 'paystack':
-                return process_paystack_payment(request, order)
-            elif payment_method == 'paypal':
-                return process_paypal_payment(request, order)
-            elif payment_method == 'flutterwave':
-                return process_flutterwave_payment(request, order)
+            
             else:
                 # Default to Stripe card payment
                 return process_stripe_payment(request, order, payment_method)
@@ -176,119 +165,10 @@ def process_stripe_payment(request, order, payment_method):
         return redirect('orders:order_success', order_id=order.id)
 
 
-def process_paystack_payment(request, order):
-    """Process Paystack payment"""
-    payment_service = get_payment_service(order, 'paystack')
-    result = payment_service.initialize_payment(request)
-    
-    if result['success']:
-        # Store reference in session for verification
-        request.session['paystack_reference'] = result['reference']
-        return redirect(result['authorization_url'])
-    else:
-        messages.error(request, f'Paystack error: {result["error"]}')
-        return redirect('orders:order_success', order_id=order.id)
 
 
-def process_paypal_payment(request, order):
-    """Process PayPal payment"""
-    payment_service = get_payment_service(order, 'paypal')
-    result = payment_service.process_payment(request)
-    
-    if result['success']:
-        return redirect(result['redirect_url'], code=303)
-    else:
-        messages.error(request, f'PayPal error: {result["error"]}')
-        return redirect('orders:order_success', order_id=order.id)
 
 
-def process_flutterwave_payment(request, order):
-    """Process Flutterwave payment"""
-    payment_service = get_payment_service(order, 'flutterwave')
-    result = payment_service.process_payment(request)
-    
-    if result['success']:
-        # Store reference for verification
-        order.payment_reference = result['reference']
-        order.save()
-        return redirect(result['redirect_url'])
-    else:
-        messages.error(request, f'Flutterwave error: {result["error"]}')
-        return redirect('orders:order_success', order_id=order.id)
-
-
-@csrf_exempt
-@require_POST
-def paystack_verify(request):
-    """Verify Paystack payment"""
-    try:
-        data = json.loads(request.body)
-        reference = data.get('reference')
-        
-        if not reference:
-            return JsonResponse({'error': 'No reference provided'}, status=400)
-        
-        # Find order by reference
-        order = Order.objects.filter(payment_reference=reference).first()
-        if not order:
-            return JsonResponse({'error': 'Order not found'}, status=404)
-        
-        # Verify payment
-        payment_service = get_payment_service(order, 'paystack')
-        result = payment_service.verify_payment(reference)
-        
-        if result['success']:
-            order.paid = True
-            order.payment_status = 'completed'
-            order.stripe_id = reference  # Store Paystack reference
-            order.status = 'processing'
-            order.save()
-            
-            return JsonResponse({'success': True, 'message': 'Payment verified successfully'})
-        else:
-            return JsonResponse({'error': result['error']}, status=400)
-            
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-@csrf_exempt
-@require_POST
-def flutterwave_webhook(request):
-    """Handle Flutterwave webhook"""
-    try:
-        # Verify webhook signature
-        signature = request.headers.get('verif-hash')
-        if not signature or signature != settings.FLUTTERWAVE_WEBHOOK_SECRET:
-            return JsonResponse({'error': 'Invalid signature'}, status=400)
-        
-        data = json.loads(request.body)
-        tx_ref = data.get('txRef')
-        status = data.get('status')
-        
-        if not tx_ref:
-            return JsonResponse({'error': 'No transaction reference'}, status=400)
-        
-        # Find order by reference
-        order = Order.objects.filter(payment_reference=tx_ref).first()
-        if not order:
-            return JsonResponse({'error': 'Order not found'}, status=404)
-        
-        if status == 'successful':
-            order.paid = True
-            order.payment_status = 'completed'
-            order.status = 'processing'
-            order.save()
-            
-            return JsonResponse({'success': True, 'message': 'Payment processed successfully'})
-        else:
-            order.payment_status = 'failed'
-            order.save()
-            
-            return JsonResponse({'error': 'Payment failed'}, status=400)
-            
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
 
 
 @login_required
@@ -387,8 +267,7 @@ def order_success(request, order_id):
         messages.success(request, f'Thank you! Your order #{order.id} has been confirmed and payment received.')
     elif order.payment_method == 'bank_transfer':
         messages.info(request, f'Order #{order.id} created successfully! We will verify your bank transfer and confirm your order.')
-    elif order.payment_method == 'cash_on_delivery':
-        messages.info(request, f'Order #{order.id} created successfully! Please have cash ready for delivery.')
+
     elif order.payment_method == 'ussd':
         messages.info(request, f'Order #{order.id} created successfully! Please complete your USSD payment.')
     elif order.payment_method == 'mobile_money':

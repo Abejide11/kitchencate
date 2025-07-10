@@ -4,124 +4,232 @@
 {% block title %}USSD Payment - Order #{{ order.id }}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-2xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">USSD Payment</h1>
-            <p class="text-gray-600">Complete your payment using USSD banking</p>
-        </div>
-
-        <!-- Order Summary -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
-            <div class="space-y-3">
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Order ID:</span>
-                    <span class="font-medium">#{{ order.id }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Total Amount:</span>
-                    <span class="font-bold text-green-600">₦{{ order.get_total_cost|floatformat:2 }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Payment Method:</span>
-                    <span class="font-medium">USSD Banking</span>
-                </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="hero-title mb-3">USSD Payment</h1>
+                <p class="hero-subtitle">Complete your payment using USSD banking</p>
             </div>
-        </div>
 
-        <!-- Payment Form -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Select Your Bank</h2>
-            
-            <form method="post" class="space-y-6">
-                {% csrf_token %}
-                
-                <!-- Bank Selection -->
-                <div>
-                    <label for="bank_code" class="block text-sm font-medium text-gray-700 mb-2">
-                        Select Your Bank
-                    </label>
-                    <select name="bank_code" id="bank_code" required 
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                        <option value="">Choose your bank...</option>
-                        <option value="gtbank">GT Bank</option>
-                        <option value="zenith">Zenith Bank</option>
-                        <option value="access">Access Bank</option>
-                        <option value="firstbank">First Bank</option>
-                        <option value="uba">UBA</option>
-                        <option value="fidelity">Fidelity Bank</option>
-                        <option value="ecobank">Ecobank</option>
-                        <option value="stanbic">Stanbic IBTC</option>
-                        <option value="union">Union Bank</option>
-                        <option value="wema">Wema Bank</option>
-                    </select>
+            <!-- Order Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="mb-0"><i class="fas fa-receipt me-2"></i>Order Summary</h2>
                 </div>
-
-                <!-- Account Number -->
-                <div>
-                    <label for="account_number" class="block text-sm font-medium text-gray-700 mb-2">
-                        Account Number
-                    </label>
-                    <input type="text" name="account_number" id="account_number" required
-                           placeholder="Enter your 10-digit account number"
-                           pattern="[0-9]{10}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                    <p class="text-sm text-gray-500 mt-1">Enter your 10-digit NUBAN account number</p>
-                </div>
-
-                <!-- Payment Instructions -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 class="font-semibold text-blue-900 mb-2">Payment Instructions</h3>
-                    <ul class="text-sm text-blue-800 space-y-1">
-                        <li>• Dial the USSD code for your selected bank</li>
-                        <li>• Enter your PIN when prompted</li>
-                        <li>• Confirm the payment amount: <strong>₦{{ payment_info.amount|floatformat:2 }}</strong></li>
-                        <li>• Use reference: <strong>{{ payment_info.reference }}</strong></li>
-                        <li>• Keep the transaction receipt for verification</li>
-                    </ul>
-                </div>
-
-                <!-- USSD Codes Reference -->
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <h3 class="font-semibold text-gray-900 mb-2">USSD Codes Reference</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                        <div><strong>GT Bank:</strong> *737*1*[Account]*[Amount]#</div>
-                        <div><strong>Zenith:</strong> *966*[Account]*[Amount]#</div>
-                        <div><strong>Access:</strong> *901*[Account]*[Amount]#</div>
-                        <div><strong>First Bank:</strong> *894*[Account]*[Amount]#</div>
-                        <div><strong>UBA:</strong> *919*[Account]*[Amount]#</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Order ID:</span>
+                                <span class="fw-bold">#{{ order.id }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Total Amount:</span>
+                                <span class="fw-bold text-success fs-5">₦{{ order.get_total_cost|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Payment Method:</span>
+                                <span class="fw-bold">USSD Banking</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Submit Button -->
-                <div class="flex space-x-4">
-                    <button type="submit" 
-                            class="flex-1 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200">
-                        <i class="fas fa-mobile-alt mr-2"></i>
-                        Generate USSD Code
-                    </button>
-                    <a href="{% url 'orders:order_success' order.id %}" 
-                       class="bg-gray-300 text-gray-700 py-3 px-6 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-200">
-                        Cancel
-                    </a>
+            <!-- Payment Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0"><i class="fas fa-mobile-alt me-2"></i>Select Your Bank</h2>
                 </div>
-            </form>
-        </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Bank Selection -->
+                        <div class="mb-4">
+                            <label for="bank_code" class="form-label fw-bold">
+                                <i class="fas fa-university me-2"></i>Select Your Bank
+                            </label>
+                            <select name="bank_code" id="bank_code" required class="form-select form-select-lg">
+                                <option value="">Choose your bank...</option>
+                                <option value="gtbank">🏦 GT Bank</option>
+                                <option value="zenith">🏦 Zenith Bank</option>
+                                <option value="access">🏦 Access Bank</option>
+                                <option value="firstbank">🏦 First Bank</option>
+                                <option value="uba">🏦 UBA</option>
+                                <option value="fidelity">🏦 Fidelity Bank</option>
+                                <option value="ecobank">🏦 Ecobank</option>
+                                <option value="stanbic">🏦 Stanbic IBTC</option>
+                                <option value="union">🏦 Union Bank</option>
+                                <option value="wema">🏦 Wema Bank</option>
+                            </select>
+                        </div>
 
-        <!-- Important Notes -->
-        <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h3 class="font-semibold text-yellow-900 mb-2">Important Notes</h3>
-            <ul class="text-sm text-yellow-800 space-y-1">
-                <li>• Ensure you have sufficient funds in your account</li>
-                <li>• Keep your phone nearby to receive transaction notifications</li>
-                <li>• Payment verification may take 5-10 minutes</li>
-                <li>• Contact support if you encounter any issues</li>
-            </ul>
+                        <!-- Account Number -->
+                        <div class="mb-4">
+                            <label for="account_number" class="form-label fw-bold">
+                                <i class="fas fa-credit-card me-2"></i>Account Number
+                            </label>
+                            <input type="text" name="account_number" id="account_number" required
+                                   placeholder="Enter your 10-digit account number"
+                                   pattern="[0-9]{10}"
+                                   class="form-control form-control-lg">
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Enter your 10-digit NUBAN account number
+                            </div>
+                        </div>
+
+                        <!-- Payment Instructions -->
+                        <div class="alert alert-info mb-4">
+                            <h5 class="alert-heading">
+                                <i class="fas fa-info-circle me-2"></i>Payment Instructions
+                            </h5>
+                            <ul class="mb-0">
+                                <li>Dial the USSD code for your selected bank</li>
+                                <li>Enter your PIN when prompted</li>
+                                <li>Confirm the payment amount: <strong>₦{{ payment_info.amount|floatformat:2 }}</strong></li>
+                                <li>Use reference: <strong>{{ payment_info.reference }}</strong></li>
+                                <li>Keep the transaction receipt for verification</li>
+                            </ul>
+                        </div>
+
+                        <!-- USSD Codes Reference -->
+                        <div class="card mb-4" style="background-color: var(--light-bg);">
+                            <div class="card-header" style="background-color: var(--accent-color);">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-list me-2"></i>USSD Codes Reference
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-2"><strong>GT Bank:</strong> *737*1*[Account]*[Amount]#</div>
+                                        <div class="mb-2"><strong>Zenith:</strong> *966*[Account]*[Amount]#</div>
+                                        <div class="mb-2"><strong>Access:</strong> *901*[Account]*[Amount]#</div>
+                                        <div class="mb-2"><strong>First Bank:</strong> *894*[Account]*[Amount]#</div>
+                                        <div class="mb-2"><strong>UBA:</strong> *919*[Account]*[Amount]#</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-2"><strong>Fidelity:</strong> *770*[Account]*[Amount]#</div>
+                                        <div class="mb-2"><strong>Ecobank:</strong> *326*[Account]*[Amount]#</div>
+                                        <div class="mb-2"><strong>Stanbic:</strong> *909*[Account]*[Amount]#</div>
+                                        <div class="mb-2"><strong>Union:</strong> *826*[Account]*[Amount]#</div>
+                                        <div class="mb-2"><strong>Wema:</strong> *945*[Account]*[Amount]#</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-grid gap-3 d-md-flex justify-content-md-end">
+                            <a href="{% url 'orders:order_success' order.id %}" 
+                               class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-mobile-alt me-2"></i>Generate USSD Code
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="alert alert-warning mt-4">
+                <h5 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Important Notes
+                </h5>
+                <ul class="mb-0">
+                    <li>Ensure you have sufficient funds in your account</li>
+                    <li>Keep your phone nearby to receive transaction notifications</li>
+                    <li>Payment verification may take 5-10 minutes</li>
+                    <li>Contact support if you encounter any issues</li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Custom styling for USSD payment page */
+.form-select-lg, .form-control-lg {
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.form-select-lg:focus, .form-control-lg:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(139, 90, 60, 0.25);
+}
+
+.alert {
+    border-radius: 15px;
+    border: none;
+    padding: 1.5rem;
+}
+
+.alert-info {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: var(--text-dark);
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: var(--text-dark);
+}
+
+.card {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    border: none;
+    padding: 1.5rem;
+}
+
+.btn-lg {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color), #20c997);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: translateY(-2px);
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--border-color);
+    color: var(--text-dark);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--border-color);
+    border-color: var(--border-color);
+    color: var(--text-dark);
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -140,6 +248,28 @@ document.addEventListener('DOMContentLoaded', function() {
     bankSelect.addEventListener('change', function() {
         const selectedBank = this.value;
         // You can add bank-specific instructions here if needed
+        console.log('Selected bank:', selectedBank);
+    });
+    
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const bankCode = bankSelect.value;
+        const accountNumber = accountInput.value;
+        
+        if (!bankCode) {
+            e.preventDefault();
+            alert('Please select your bank');
+            bankSelect.focus();
+            return;
+        }
+        
+        if (!accountNumber || accountNumber.length !== 10) {
+            e.preventDefault();
+            alert('Please enter a valid 10-digit account number');
+            accountInput.focus();
+            return;
+        }
     });
 });
 </script>
