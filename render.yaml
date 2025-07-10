@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: kitchencrate
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn ecommerce.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: ecommerce.settings
+      - key: SECRET_KEY
+        value: your-django-secret-key
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "your-domain.com"
+    build:
+      pythonVersion: 3.11.8 
