@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180" height="48" viewBox="0 0 180 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="48" rx="12" fill="#fff8f0"/>
+  <g>
+    <circle cx="28" cy="24" r="18" fill="#F5C16C"/>
+    <rect x="22" y="12" width="4" height="16" rx="2" fill="#8B5A3C"/>
+    <rect x="30" y="12" width="4" height="16" rx="2" fill="#8B5A3C"/>
+    <ellipse cx="28" cy="34" rx="8" ry="4" fill="#fff8f0"/>
+    <ellipse cx="28" cy="34" rx="6" ry="2.5" fill="#F5C16C"/>
+    <ellipse cx="28" cy="18" rx="10" ry="6" fill="#fff8f0"/>
+    <ellipse cx="28" cy="18" rx="8" ry="4.5" fill="#F5C16C"/>
+    <rect x="24" y="36" width="8" height="4" rx="2" fill="#8B5A3C"/>
+  </g>
+  <text x="54" y="32" font-family="'Playfair Display', serif" font-size="28" font-weight="bold" fill="#8B5A3C">KitchenCrae</text>
+</svg> 

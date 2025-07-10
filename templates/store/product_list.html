@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if category %}{{ category.name }}{% else %}Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                {% if category %}
+                <h1 class="hero-title">{{ category.name }}</h1>
+                {% if category.description %}
+                <p class="hero-subtitle">{{ category.description }}</p>
+                {% else %}
+                <p class="hero-subtitle">Discover our premium collection of {{ category.name }} products</p>
+                {% endif %}
+                {% else %}
+                <h1 class="hero-title">Discover Our Premium Collection</h1>
+                <p class="hero-subtitle">Explore our carefully curated selection of high-quality products designed to enhance your lifestyle and bring beauty to your everyday routine.</p>
+                {% endif %}
+                <a href="#products" class="btn btn-primary btn-lg">
+                    <i class="fas fa-shopping-bag"></i> Shop Now
+                </a>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="position-relative">
+                    <div class="bg-gradient-accent rounded-circle d-inline-block p-5" style="width: 300px; height: 300px;">
+                        {% if category %}
+                        <i class="fas fa-tag fa-5x text-primary"></i>
+                        {% else %}
+                        <i class="fas fa-gem fa-5x text-primary"></i>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="products">
+    <div class="section-header">
+        <h2 class="section-title">
+            {% if category %}{{ category.name }} Menu{% else %}Our Menu{% endif %}
+        </h2>
+        <p class="section-subtitle">
+            {% if category %}Find the perfect {{ category.name }} dishes to satisfy your cravings{% else %}Find the perfect meal for your appetite and taste!{% endif %}
+        </p>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar with Categories -->
+        <div class="col-lg-3">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-filter"></i> Categories</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <a href="{% url 'store:product_list' %}" 
+                               class="d-flex align-items-center p-3 rounded text-decoration-none {% if not category %}bg-primary text-white fw-bold{% else %}hover-bg-light{% endif %}">
+                                <i class="fas fa-th-large me-2"></i>
+                                All Menu Items
+                            </a>
+                        </li>
+                        {% for c in categories %}
+                        <li class="mb-2">
+                            <a href="{{ c.get_absolute_url }}" 
+                               class="d-flex align-items-center p-3 rounded text-decoration-none {% if category.slug == c.slug %}bg-primary text-white fw-bold{% else %}hover-bg-light{% endif %}">
+                                <i class="fas fa-tag me-2"></i>
+                                {{ c.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            <!-- Products Count -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1"><i class="fas fa-shopping-bag"></i> Products</h3>
+                    <p class="text-muted mb-0">{{ products.paginator.count }} products found</p>
+                </div>
+                <div class="text-end">
+                    <div class="badge bg-primary fs-6">{{ products|length }} Items</div>
+                </div>
+            </div>
+
+            {% if products %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 product-card">
+                        <div class="position-relative">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div class="position-absolute top-0 end-0 m-2">
+                                {% if product.is_available %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>In Stock
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times me-1"></i>Out of Stock
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-2">
+                                <span class="badge bg-primary">{{ product.category.name }}</span>
+                            </div>
+                            <h5 class="product-title">{{ product.name }}</h5>
+                            <p class="card-text text-muted">{{ product.description|truncatewords:15 }}</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="product-price">${{ product.price }}</span>
+                                    
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <a href="{{ product.get_absolute_url }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-eye me-2"></i>View Details
+                                    </a>
+                                    {% if product.is_available %}
+                                    <form method="post" action="{% url 'cart:cart_add' product.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <button class="btn btn-secondary w-100" disabled>
+                                        <i class="fas fa-ban me-2"></i>Out of Stock
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <nav aria-label="Product pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}">
+                            <i class="fas fa-angle-left"></i> Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in products.paginator.page_range %}
+                    {% if products.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}">
+                            Next <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <div class="bg-gradient-accent rounded-circle d-inline-block p-5 mb-4" style="width: 150px; height: 150px;">
+                    <i class="fas fa-search fa-3x text-primary"></i>
+                </div>
+                <h3 class="section-title">No products found</h3>
+                <p class="section-subtitle">We couldn't find any products matching your criteria.</p>
+                <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-home"></i> View All Products
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
