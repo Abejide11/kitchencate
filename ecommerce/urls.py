@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from accounts.views import login_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -13,6 +14,7 @@ urlpatterns = [
     path('orders/', include('orders.urls')),
     path('accounts/', include('allauth.urls')),
     path('user/', include('accounts.urls')),
+    path('login/', login_view, name='login'),
 ]
 
 if settings.DEBUG:

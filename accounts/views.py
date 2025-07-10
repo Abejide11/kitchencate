@@ -23,8 +23,18 @@ def profile(request):
 
 @login_required
 def dashboard(request):
-    user_orders = request.user.orders.all()[:5]  # Get last 5 orders
+    # Get total orders count
+    total_orders = request.user.orders.count()
+    
+    # Get paid orders count
+    paid_orders = request.user.orders.filter(payment_status='completed').count()
+    
+    # Get last 5 orders for display
+    user_orders = request.user.orders.all()[:5]
+    
     context = {
+        'total_orders': total_orders,
+        'paid_orders': paid_orders,
         'user_orders': user_orders,
     }
     return render(request, 'accounts/dashboard.html', context) 

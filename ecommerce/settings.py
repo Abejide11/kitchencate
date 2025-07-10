@@ -3,7 +3,6 @@ Django settings for ecommerce project.
 """
 
 from pathlib import Path
-import os
 from decouple import config
 from django.urls import reverse_lazy
 
@@ -30,6 +29,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'crispy_forms',
+
     'crispy_bootstrap5',
     'widget_tweaks',
 

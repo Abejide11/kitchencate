@@ -1,7 +1,4 @@
 from django.contrib import admin
-from django.utils.html import format_html
-from django.urls import reverse
-from django.utils.safestring import mark_safe
 from .models import Order, OrderItem, BankTransferDetails
 
 
@@ -66,7 +63,7 @@ class OrderAdmin(admin.ModelAdmin):
             'google_pay': '🤖'
         }
         icon = icons.get(obj.payment_method, '💰')
-        return format_html('{} {}', icon, obj.get_payment_method_display())
+        return f"{icon} {obj.get_payment_method_display()}"
     payment_method_display.short_description = 'Payment Method'
     
     def payment_status_display(self, obj):
@@ -79,10 +76,7 @@ class OrderAdmin(admin.ModelAdmin):
             'cancelled': 'gray'
         }
         color = colors.get(obj.payment_status, 'black')
-        return format_html(
-            '<span style="color: {}; font-weight: bold;">{}</span>',
-            color, obj.get_payment_status_display()
-        )
+        return f"<span style=\"color: {color}; font-weight: bold;\">{obj.get_payment_status_display()}</span>"
     payment_status_display.short_description = 'Payment Status'
     
     def total_cost_display(self, obj):

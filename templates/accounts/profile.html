@@ -1,66 +1,246 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}Profile - KitchenCrate{% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header">
-                    <h4 class="mb-0"><i class="fas fa-user"></i> Profile</h4>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Profile Header -->
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeInUp mb-5">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-gradient p-4 rounded-circle shadow-lg mb-3" style="background: linear-gradient(135deg, #8B5A3C, #D4AF37); width: 100px; height: 100px;">
+                            <i class="fas fa-user text-white" style="font-size: 3rem;"></i>
+                        </div>
+                        <h2 class="fw-bold mb-2" style="color: #8B5A3C;">User Profile</h2>
+                        <p class="text-muted mb-0">Manage your account information and preferences</p>
+                    </div>
                 </div>
-                <div class="card-body">
+            </div>
+
+            <!-- Profile Information -->
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #8B5A3C, #D4AF37);">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Profile Information
+                    </h3>
+                </div>
+                <div class="card-body p-5">
                     <div class="row">
-                        <div class="col-md-6">
-                            <h5>Account Information</h5>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Username:</label>
-                                <p class="text-muted">{{ user.username }}</p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Email:</label>
-                                <p class="text-muted">{{ user.email }}</p>
-                            </div>
-                         
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Date Joined:</label>
-                                <p class="text-muted">{{ user.date_joined|date:"F d, Y" }}</p>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-user me-2"></i>Username
+                            </label>
+                            <div class="form-control-plaintext">{{ user.username }}</div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-envelope me-2"></i>Email Address
+                            </label>
+                            <div class="form-control-plaintext">{{ user.email }}</div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-user me-2"></i>First Name
+                            </label>
+                            <div class="form-control-plaintext">{{ user.first_name|default:"Not provided" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-user me-2"></i>Last Name
+                            </label>
+                            <div class="form-control-plaintext">{{ user.last_name|default:"Not provided" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-calendar me-2"></i>Date Joined
+                            </label>
+                            <div class="form-control-plaintext">{{ user.date_joined|date:"F d, Y" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-clock me-2"></i>Last Login
+                            </label>
+                            <div class="form-control-plaintext">{{ user.last_login|date:"F d, Y H:i"|default:"Never" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Statistics -->
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeInUp mt-5" style="animation-delay: 0.2s;">
+                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #28A745, #20C997);">
+                    <h3 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Order Statistics
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light p-3 rounded-circle mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-shopping-bag text-primary" style="font-size: 2rem;"></i>
+                                </div>
+                                <h3 class="fw-bold mb-1" style="color: #8B5A3C;">{{ total_orders }}</h3>
+                                <p class="text-muted mb-0">Total Orders</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <h5>Order Statistics</h5>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="card bg-primary text-white text-center">
-                                        <div class="card-body">
-                                            <h3>{{ total_orders }}</h3>
-                                            <p class="mb-0">Total Orders</p>
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light p-3 rounded-circle mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
                                 </div>
-                                <div class="col-6">
-                                    <div class="card bg-success text-white text-center">
-                                        <div class="card-body">
-                                            <h3>{{ paid_orders }}</h3>
-                                            <p class="mb-0">Paid Orders</p>
-                                        </div>
-                                    </div>
+                                <h3 class="fw-bold mb-1" style="color: #28A745;">{{ paid_orders }}</h3>
+                                <p class="text-muted mb-0">Paid Orders</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light p-3 rounded-circle mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-star text-warning" style="font-size: 2rem;"></i>
                                 </div>
+                                <h3 class="fw-bold mb-1" style="color: #FFC107;">KitchenCrate</h3>
+                                <p class="text-muted mb-0">Member Level</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <hr>
-                    
-                    <div class="d-flex gap-3">
-                        <a href="{% url 'user:dashboard' %}" class="btn btn-outline-primary">
-                            <i class="fas fa-arrow-left"></i> Back to Dashboard
-                        </a>
-                        <a href="{% url 'orders:order_list' %}" class="btn btn-primary">
-                            <i class="fas fa-shopping-bag"></i> View All Orders
-                        </a>
+                </div>
+            </div>
+
+            <!-- Account Actions -->
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeInUp mt-5" style="animation-delay: 0.3s;">
+                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #17A2B8, #0DCAF0);">
+                    <h3 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>Account Actions
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a href="{% url 'account_reset_password' %}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="{% url 'orders:order_list' %}" class="btn btn-outline-info w-100 py-3">
+                                <i class="fas fa-list me-2"></i>View All Orders
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="{% url 'store:product_list' %}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-shopping-cart me-2"></i>Continue Shopping
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="{% url 'user:dashboard' %}" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeInUp mt-5" style="animation-delay: 0.4s;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-shield-alt text-primary fs-4 me-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-2" style="color: #8B5A3C;">Account Security</h5>
+                            <p class="text-muted mb-0">
+                                Your account information is secure and protected. For additional security, 
+                                consider changing your password regularly and never share your login credentials.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .animate__fadeInUp {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .form-control-plaintext {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 15px;
+        color: #495057;
+        font-weight: 500;
+    }
+    
+    .btn-outline-primary {
+        border-color: #8B5A3C;
+        color: #8B5A3C;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #8B5A3C;
+        border-color: #8B5A3C;
+        color: white;
+    }
+    
+    .btn-outline-warning {
+        border-color: #FFC107;
+        color: #FFC107;
+    }
+    
+    .btn-outline-warning:hover {
+        background-color: #FFC107;
+        border-color: #FFC107;
+        color: #212529;
+    }
+    
+    .btn-outline-info {
+        border-color: #17A2B8;
+        color: #17A2B8;
+    }
+    
+    .btn-outline-info:hover {
+        background-color: #17A2B8;
+        border-color: #17A2B8;
+        color: white;
+    }
+    
+    .btn-outline-success {
+        border-color: #28A745;
+        color: #28A745;
+    }
+    
+    .btn-outline-success:hover {
+        background-color: #28A745;
+        border-color: #28A745;
+        color: white;
+    }
+    
+    .text-primary {
+        color: #8B5A3C !important;
+    }
+</style>
 {% endblock %} 

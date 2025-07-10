@@ -28,7 +28,7 @@
         <h1 class="mb-3">{{ product.name }}</h1>
         
         <div class="mb-3">
-            <span class="h3 text-primary">${{ product.price }}</span>
+                                    <span class="h3 text-primary">₦{{ product.price }}</span>
             {% if product.is_available %}
             <span class="badge bg-success ms-2">In Stock ({{ product.stock }} available)</span>
             {% else %}
@@ -106,7 +106,7 @@
                     <p class="card-text text-muted">{{ related_product.description|truncatewords:10 }}</p>
                     <div class="mt-auto">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="h6 text-primary mb-0">${{ related_product.price }}</span>
+                            <span class="h6 text-primary mb-0">₦{{ related_product.price }}</span>
                             {% if related_product.is_available %}
                             <span class="badge bg-success">In Stock</span>
                             {% else %}

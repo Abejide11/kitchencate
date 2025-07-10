@@ -21,14 +21,14 @@ class ProductForm(forms.ModelForm):
             'slug': 'URL Slug',
             'category': 'Category',
             'description': 'Description',
-            'price': 'Price ($)',
+            'price': 'Price (₦)',
             'stock': 'Stock Quantity',
             'available': 'Available for Purchase',
             'image': 'Product Image',
         }
         help_texts = {
             'slug': 'Leave empty to auto-generate from product name',
-            'price': 'Enter price in dollars (e.g., 29.99)',
+            'price': 'Enter price in Naira (e.g., 25000.00)',
             'stock': 'Number of items available in stock',
             'available': 'Check if product should be visible to customers',
         }

@@ -85,13 +85,13 @@ class Command(BaseCommand):
                 slug=name.lower().replace(' ', '-').replace('&', 'and'),
                 category=category,
                 description=description,
-                price=round(random.uniform(10.0, 500.0), 2),
+                price=round(random.uniform(15000.0, 150000.0), 2),
                 stock=random.randint(0, 100),
                 available=random.choice([True, True, True, False]),  # 75% chance of being available
             )
             
             self.stdout.write(
-                self.style.SUCCESS(f'Created product: {product.name} - ${product.price}')
+                self.style.SUCCESS(f'Created product: {product.name} - ₦{product.price}')
             )
         
         self.stdout.write(
