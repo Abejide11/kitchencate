@@ -163,3 +163,6 @@ PAYMENT_COUNTRY = 'NG'    # Nigeria
 
 # Cart
 CART_SESSION_ID = 'cart'
+
+# Admin Dashboard Password
+ADMIN_DASHBOARD_PASSWORD = config('ADMIN_DASHBOARD_PASSWORD', default='your_secure_admin_password_here')

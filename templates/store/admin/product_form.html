@@ -2,6 +2,25 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{% block footer_content %}
+<div class="row">
+    <div class="col-md-6">
+        <h5>KitchenCrate Admin</h5>
+        <p>Professional food management system for efficient restaurant operations and order processing.</p>
+    </div>
+    <div class="col-md-6">
+        <h5>Admin Tools</h5>
+        <ul class="list-unstyled">
+            <li><a href="{% url 'store:admin_dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+        </ul>
+    </div>
+</div>
+<hr>
+<div class="text-center">
+    <p>&copy; 2025 KitchenCrate Admin Panel. All rights reserved.</p>
+</div>
+{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
 <div class="hero-section">

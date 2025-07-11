@@ -5,32 +5,32 @@ from .models import Product, Category
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'slug', 'category', 'description', 'price', 'stock', 'available', 'image']
+        fields = ['name', 'category', 'description', 'price', 'stock', 'available', 'image']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter product name'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter food name'}),
             'slug': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'auto-generated'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Enter product description'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Enter food description'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
             'stock': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
             'available': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
         labels = {
-            'name': 'Product Name',
+            'name': 'Food Name',
             'slug': 'URL Slug',
             'category': 'Category',
             'description': 'Description',
             'price': 'Price (₦)',
             'stock': 'Stock Quantity',
             'available': 'Available for Purchase',
-            'image': 'Product Image',
+            'image': 'Food Image',
         }
         help_texts = {
-            'slug': 'Leave empty to auto-generate from product name',
+            'slug': 'Leave empty to auto-generate from food name',
             'price': 'Enter price in Naira (e.g., 25000.00)',
             'stock': 'Number of items available in stock',
-            'available': 'Check if product should be visible to customers',
+            'available': 'Check if food should be visible to customers',
         }
 
 

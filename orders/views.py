@@ -15,6 +15,8 @@ from .forms import OrderCreateForm, BankTransferForm
 from .payment_services import get_payment_service
 from .email_services import send_payment_confirmation_email, send_order_created_email, send_payment_pending_email
 from cart.cart import Cart
+from django.contrib.admin.views.decorators import staff_member_required
+from store.models import Product
 
 
 @login_required
