@@ -92,6 +92,14 @@ def category_detail(request, slug):
 def is_admin(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
 
+def require_admin_password(view_func):
+    """Decorator to require admin password verification"""
+    def wrapper(request, *args, **kwargs):
+        if not request.session.get('admin_password_verified', False):
+            return redirect('store:admin_password_check')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
 
 def admin_password_check(request):
     """Check for admin password before allowing access to admin dashboard"""
@@ -122,20 +130,9 @@ def admin_logout(request):
     return redirect('store:admin_password_check')
 
 
-@login_required
 def admin_dashboard(request):
     """Comprehensive admin dashboard with product and category management"""
-    print(f"DEBUG: User: {request.user}")
-    print(f"DEBUG: Is authenticated: {request.user.is_authenticated}")
-    print(f"DEBUG: Is staff: {request.user.is_staff}")
-    print(f"DEBUG: Is superuser: {request.user.is_superuser}")
     print(f"DEBUG: Admin password verified: {request.session.get('admin_password_verified', False)}")
-    
-    # Check if user is admin
-    if not is_admin(request.user):
-        print("DEBUG: User is not admin, redirecting to product_list")
-        messages.error(request, 'You do not have permission to access the admin dashboard.')
-        return redirect('store:product_list')
     
     # Check if admin password is verified
     if not request.session.get('admin_password_verified', False):
@@ -286,8 +283,7 @@ def admin_dashboard(request):
     return render(request, 'store/admin_dashboard.html', context)
 
 
-@login_required
-@user_passes_test(is_admin)
+@require_admin_password
 def admin_product_create(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -306,8 +302,7 @@ def admin_product_create(request):
     })
 
 
-@login_required
-@user_passes_test(is_admin)
+@require_admin_password
 def admin_product_update(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
@@ -328,8 +323,7 @@ def admin_product_update(request, pk):
     })
 
 
-@login_required
-@user_passes_test(is_admin)
+@require_admin_password
 def admin_product_list(request):
     products = Product.objects.all().order_by('-created_at')
     # Search functionality
@@ -374,8 +368,7 @@ def admin_product_list(request):
     })
 
 
-@login_required
-@user_passes_test(is_admin)
+@require_admin_password
 def admin_product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
