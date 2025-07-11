@@ -1131,7 +1131,6 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{% url 'store:product_list' %}">
                 <img src="{% static 'images/kitchencrae-logo.svg' %}" alt="KitchenCrate Logo" style="height: 40px; margin-right: 10px;">
-                <span class="text-white d-none d-sm-inline">KitchenCrate</span>
             </a>
             {% if user.is_authenticated %}
             
@@ -1141,51 +1140,99 @@
             {% endif %}
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        {% if user.is_authenticated %}
-                        <a class="nav-link" href="{% url 'store:product_list' %}">Menu</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'user:dashboard' %}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'orders:payment_dashboard' %}">Payments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'orders:order_list' %}">My Orders</a>
-                    </li>
+                <!-- Main Navigation -->
+                <ul class="navbar-nav main-nav">
+                    {% if user.is_authenticated and not admin_dashboard %}
+                        <li class="nav-item">
+                            <a class="nav-link nav-item-custom" href="{% url 'store:product_list' %}">
+                                <i class="nav-icon fas fa-utensils"></i>
+                                <span class="nav-text">Menu</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-item-custom" href="{% url 'user:dashboard' %}">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-item-custom" href="{% url 'orders:payment_dashboard' %}">
+                                <i class="nav-icon fas fa-credit-card"></i>
+                                <span class="nav-text">Payments</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-item-custom" href="{% url 'orders:order_list' %}">
+                                <i class="nav-icon fas fa-list"></i>
+                                <span class="nav-text">My Orders</span>
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
                 
                 <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item position-relative">
-                        <a class="nav-link" href="{% url 'cart:cart_detail' %}">
-                            <i class="fas fa-shopping-cart"></i>
-                            {% if cart|length > 0 %}
-                            <span class="cart-badge">{{ cart|length }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-1"></i>{{ user.first_name|default:user.username }}
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'user:profile' %}">Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'user:logout' %}">Logout</a></li>
-                        </ul>
-                    </li>
+                    {% if not admin_dashboard %}
+                        {% if user.is_authenticated %}
+                        <li class="nav-item position-relative">
+                            <a class="nav-link" href="{% url 'cart:cart_detail' %}">
+                                <i class="fas fa-shopping-cart"></i>
+                                {% if cart|length > 0 %}
+                                <span class="cart-badge">{{ cart|length }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        
+                        <!-- Desktop Dropdown -->
+                        <li class="nav-item dropdown d-none d-md-block">
+                            <a class="nav-link dropdown-toggle" href="{% url 'user:profile' %}" role="button">
+                                <i class="fas fa-user me-1"></i>{{ user.first_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'user:profile' %}">
+                                    <i class="fas fa-user-circle"></i> Profile
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'user:logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Mobile Profile Button -->
+                        <li class="nav-item d-md-none">
+                            <a class="nav-link" href="{% url 'user:profile' %}">
+                                <i class="fas fa-user me-1"></i>{{ user.first_name|default:user.username }}
+                            </a>
+                        </li>
+                        
+                        <!-- Mobile Logout Button -->
+                        <li class="nav-item d-md-none">
+                            <a class="nav-link" href="{% url 'user:logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user:login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light" href="{% url 'user:signup' %}">Create</a>
+                        </li>
+                        {% endif %}
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'user:login' %}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light" href="{% url 'user:signup' %}">Create</a>
-                    </li>
+                        <!-- Admin logout link only -->
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'store:admin_dashboard' %}">
+                                <i class="fas fa-tachometer-alt me-1"></i>Admin Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'store:admin_logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i>Admin Logout
+                            </a>
+                        </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
             </div>
@@ -1213,6 +1260,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
+            {% block footer_content %}
             <div class="row">
                 <div class="col-md-4">
                     <h5>About KitchenCrate</h5>
@@ -1238,6 +1286,7 @@
             <div class="text-center">
                 <p>&copy; 2025 KitchenCrate. All rights reserved.</p>
             </div>
+            {% endblock %}
         </div>
     </footer>
 
@@ -1280,7 +1329,7 @@
                 }
             });
             
-            // Mobile navigation improvements
+            // Enhanced mobile navigation improvements
             const navbarToggler = document.querySelector('.navbar-toggler');
             const navbarCollapse = document.querySelector('.navbar-collapse');
             
@@ -1304,6 +1353,62 @@
                     });
                 });
             }
+            
+            // Enhanced mobile dropdown improvements
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach(dropdown => {
+                const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+                const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+                
+                if (dropdownToggle && dropdownMenu) {
+                    // Add touch feedback for dropdown items
+                    const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
+                    dropdownItems.forEach(item => {
+                        item.addEventListener('touchstart', function() {
+                            this.style.transform = 'scale(0.98)';
+                        });
+                        
+                        item.addEventListener('touchend', function() {
+                            this.style.transform = '';
+                        });
+                        
+                        // Add haptic feedback for mobile
+                        item.addEventListener('click', function() {
+                            if (navigator.vibrate) {
+                                navigator.vibrate(50);
+                            }
+                        });
+                    });
+                    
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!dropdown.contains(e.target)) {
+                            dropdownMenu.classList.remove('show');
+                        }
+                    });
+                    
+                    // Enhanced dropdown toggle behavior
+                    dropdownToggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Close other dropdowns
+                        dropdowns.forEach(otherDropdown => {
+                            if (otherDropdown !== dropdown) {
+                                otherDropdown.querySelector('.dropdown-menu').classList.remove('show');
+                            }
+                        });
+                        
+                        // Toggle current dropdown
+                        dropdownMenu.classList.toggle('show');
+                        
+                        // Add haptic feedback
+                        if (navigator.vibrate) {
+                            navigator.vibrate(30);
+                        }
+                    });
+                }
+            });
             
             // Prevent zoom on input focus (iOS)
             const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="number"], textarea');

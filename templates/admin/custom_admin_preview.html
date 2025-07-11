@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KitchenCrate Admin Preview</title>
+    <link rel="stylesheet" type="text/css" href="/static/admin/custom_admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background: #f8f6f2; padding: 40px; }
+        .preview-container { max-width: 900px; margin: 0 auto; }
+        .admin-header { background: linear-gradient(90deg, #8B5A3C 0%, #D4AF37 100%); color: #fff; padding: 32px 24px; border-radius: 18px; margin-bottom: 32px; display: flex; align-items: center; }
+        .admin-header img { height: 48px; margin-right: 18px; }
+        .admin-header h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin: 0; }
+        .admin-card { background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(139,90,60,0.08); padding: 32px; margin-bottom: 32px; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .admin-table th, .admin-table td { padding: 12px 16px; border-bottom: 1px solid #eee; }
+        .admin-table th { background: #f5e6d3; color: #8B5A3C; font-weight: 600; }
+        .admin-table tr:last-child td { border-bottom: none; }
+    </style>
+</head>
+<body>
+<div class="preview-container">
+    <div class="admin-header">
+        <img src="/static/images/kitchencrae-logo.svg" alt="KitchenCrate Logo">
+        <h1>KitchenCrate Administration</h1>
+    </div>
+    <div class="admin-card">
+        <h2 style="font-family: 'Playfair Display', serif; color: #8B5A3C;">Sample Admin Table</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>admin</td>
+                    <td>admin@kitchencrate.com</td>
+                    <td>Superuser</td>
+                    <td><span style="color: #28A745; font-weight: 600;">Active</span></td>
+                </tr>
+                <tr>
+                    <td>manager</td>
+                    <td>manager@kitchencrate.com</td>
+                    <td>Staff</td>
+                    <td><span style="color: #28A745; font-weight: 600;">Active</span></td>
+                </tr>
+                <tr>
+                    <td>user1</td>
+                    <td>user1@example.com</td>
+                    <td>User</td>
+                    <td><span style="color: #DC3545; font-weight: 600;">Inactive</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html> 

@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}KitchenCrate Administration{% endblock %}
+
+{% block branding %}
+  <h1 id="site-name" style="font-family: 'Playfair Display', serif; color: #8B5A3C;">
+    <img src="{% static 'images/kitchencrae-logo.svg' %}" alt="KitchenCrate Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+    <!-- KitchenCrate Administration -->
+  </h1>
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'admin/custom_admin.css' %}">
+{% endblock %} 
