@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn ecommerce.wsgi:application"
+    startCommand: "python manage.py migrate && python manage.py setup_deployment_admin && gunicorn ecommerce.wsgi:application"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: ecommerce.settings
@@ -16,5 +16,7 @@ services:
         value: "your-domain.com"
       - key: PYTHONPATH
         value: "."
+      - key: ADMIN_DASHBOARD_PASSWORD
+        value: "admin123"
     build:
       pythonVersion: 3.11.8 
