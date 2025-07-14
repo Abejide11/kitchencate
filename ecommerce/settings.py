@@ -147,7 +147,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='webblog902@gmail.com')
 # EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='your-app-password')
 EMAIL_HOST_PASSWORD = 'ercupdkazeiprbzc'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = 'KitchenCrate <webblog902@gmail.com>'
 
 # Flutterwave settings (secure via .env)
 FLUTTERWAVE_PUBLIC_KEY = config('FLUTTERWAVE_PUBLIC_KEY', default='FLWPUBK_TEST_your_flutterwave_public_key')
@@ -159,10 +159,12 @@ FLUTTERWAVE_WEBHOOK_SECRET = config('FLUTTERWAVE_WEBHOOK_SECRET', default='your_
 PAYMENT_CURRENCY = 'NGN'  # Nigerian Naira
 PAYMENT_COUNTRY = 'NG'    # Nigeria
 
-
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
 
 # Cart
 CART_SESSION_ID = 'cart'
 
 # Admin Dashboard Password
 ADMIN_DASHBOARD_PASSWORD = config('ADMIN_DASHBOARD_PASSWORD', default='your_secure_admin_password_here')
+ADMIN_EMAIL = 'webblog902@gmail.com'
