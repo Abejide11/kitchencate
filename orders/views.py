@@ -13,10 +13,11 @@ import json
 from .models import Order, OrderItem, BankTransferDetails
 from .forms import OrderCreateForm, BankTransferForm
 from .payment_services import get_payment_service
-from .email_services import send_payment_confirmation_email, send_order_created_email, send_payment_pending_email
+from .email_services import send_payment_confirmation_email, send_order_created_email, send_payment_pending_email, send_admin_payment_notification
 from cart.cart import Cart
 from django.contrib.admin.views.decorators import staff_member_required
 from store.models import Product
+import stripe
 
 
 @login_required
@@ -108,22 +109,21 @@ def order_create(request):
             # Clear the cart
             cart.clear()
             
-            # Handle different payment methods
-            payment_method = form.cleaned_data['payment_method']
+            # Notify admin of new order
+            send_admin_payment_notification(order)
             
-            if payment_method == 'bank_transfer':
-                return redirect('orders:bank_transfer_details', order_id=order.id)
-
-            elif payment_method == 'ussd':
-                return redirect('orders:ussd_payment', order_id=order.id)
-            elif payment_method == 'mobile_money':
-                return redirect('orders:mobile_money_payment', order_id=order.id)
-            elif payment_method.startswith('flutterwave_'):
-                # Handle Flutterwave payments
-                return process_flutterwave_payment(request, order, payment_method)
+            # Process payment with Stripe
+            payment_service = get_payment_service(order)
+            result = payment_service.process_payment(request)
+            if result['success']:
+                order.payment_reference = result.get('payment_reference', f'STRIPE-{order.id}')
+                order.payment_status = 'processing'
+                order.payment_notes = f'Stripe payment initiated. Reference: {result.get("payment_reference", "")}'
+                order.save()
+                return redirect(result['redirect_url'])
             else:
-                # Default to Flutterwave card payment
-                return process_flutterwave_payment(request, order, 'flutterwave_card')
+                messages.error(request, 'Stripe payment error.')
+                return redirect('orders:order_create')
     else:
         # Pre-fill form with user data if available
         initial_data = {}
@@ -137,7 +137,8 @@ def order_create(request):
     
     return render(request, 'orders/order_create.html', {
         'cart': cart,
-        'form': form
+        'form': form,
+        'stripe_pk': settings.STRIPE_PUBLISHABLE_KEY,
     })
 
 
@@ -293,7 +294,10 @@ def order_success(request, order_id):
     else:
         messages.warning(request, f'Order #{order.id} created but payment is pending. You will receive an email confirmation once payment is processed.')
     
-    return render(request, 'orders/order_success.html', {'order': order})
+    return render(request, 'orders/order_success.html', {
+        'order': order,
+        'stripe_pk': settings.STRIPE_PUBLISHABLE_KEY,
+    })
 
 
 @login_required
@@ -357,3 +361,35 @@ def check_payment_status(request, order_id):
             return JsonResponse({'error': 'Unable to retrieve payment status'}, status=400)
     
     return JsonResponse({'paid': order.paid}) 
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError:
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
+        return HttpResponse(status=400)
+
+    # Handle the event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        order_id = session['metadata'].get('order_id')
+        try:
+            order = Order.objects.get(id=order_id)
+            order.paid = True
+            order.payment_status = 'completed'
+            order.save()
+            send_payment_confirmation_email(order)
+            send_admin_payment_notification(order)
+        except Order.DoesNotExist:
+            pass
+
+    return HttpResponse(status=200) 

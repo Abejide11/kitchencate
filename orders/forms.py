@@ -4,7 +4,7 @@ from .models import Order, BankTransferDetails
 
 class OrderCreateForm(forms.ModelForm):
     payment_method = forms.ChoiceField(
-        choices=Order.PAYMENT_METHOD_CHOICES,
+        choices=[('card', 'Credit/Debit Card (Stripe)')],
         widget=forms.RadioSelect(attrs={'class': 'payment-method-radio'}),
         initial='card',
         label='Payment Method'

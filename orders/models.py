@@ -16,15 +16,7 @@ class Order(models.Model):
     ]
     
     PAYMENT_METHOD_CHOICES = [
-        ('bank_transfer', 'Bank Transfer'),
-        ('ussd', 'USSD Payment'),
-        ('mobile_money', 'Mobile Money'),
-        # Flutterwave payment methods
-        ('flutterwave_card', 'Flutterwave Card'),
-        ('flutterwave_bank', 'Flutterwave Bank Transfer'),
-        ('flutterwave_ussd', 'Flutterwave USSD'),
-        ('flutterwave_mobile', 'Flutterwave Mobile Money'),
-        ('flutterwave_qr', 'Flutterwave QR Code'),
+        ('card', 'Credit/Debit Card (Stripe)'),
     ]
     
     PAYMENT_STATUS_CHOICES = [
@@ -50,7 +42,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     
     # Payment fields
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='flutterwave_card')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='card')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
     payment_reference = models.CharField(max_length=100, blank=True, help_text="Bank transfer reference or payment ID")
     payment_notes = models.TextField(blank=True, help_text="Additional payment information")
@@ -76,15 +68,7 @@ class Order(models.Model):
     def get_payment_method_display_name(self):
         """Get a user-friendly payment method name"""
         method_names = {
-            'bank_transfer': 'Bank Transfer',
-            'ussd': 'USSD Payment',
-            'mobile_money': 'Mobile Money',
-            # Flutterwave payment methods
-            'flutterwave_card': 'Flutterwave Card',
-            'flutterwave_bank': 'Flutterwave Bank Transfer',
-            'flutterwave_ussd': 'Flutterwave USSD',
-            'flutterwave_mobile': 'Flutterwave Mobile Money',
-            'flutterwave_qr': 'Flutterwave QR Code',
+            'card': 'Credit/Debit Card (Stripe)',
         }
         return method_names.get(self.payment_method, self.payment_method.title())
     

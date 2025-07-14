@@ -248,7 +248,12 @@ def admin_dashboard(request):
     recent_products = Product.objects.order_by('-created_at')[:5]
     
     # Recent orders (last 10)
-    recent_orders = Order.objects.select_related('user').prefetch_related('items').order_by('-created')[:10]
+    order_email = ''
+    recent_orders = Order.objects.select_related('user').prefetch_related('items').order_by('-created')
+    search_email = request.GET.get('order_email', '').strip()
+    if search_email:
+        recent_orders = recent_orders.filter(email__icontains=search_email)
+    recent_orders = recent_orders[:10]
     
     # Category breakdown
     category_stats = Category.objects.annotate(
@@ -273,6 +278,7 @@ def admin_dashboard(request):
         'failed_payments': failed_payments,
         'recent_products': recent_products,
         'recent_orders': recent_orders,
+        'order_email': order_email,
         'category_stats': category_stats,
         'admin_dashboard': True,
         'category_form': category_form,

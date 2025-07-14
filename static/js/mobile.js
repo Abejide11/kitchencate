@@ -1,6 +1,7 @@
 // Mobile-specific JavaScript enhancements for KitchenCrate
 
 document.addEventListener('DOMContentLoaded', function() {
+    window.scrollTo(0, 0); // Always scroll to top on page load
     const isMobile = window.innerWidth <= 768;
     
     if (isMobile) {

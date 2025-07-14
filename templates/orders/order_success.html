@@ -252,4 +252,10 @@ function showAlert(message, type = 'info') {
         </div>
     </div>
 </div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripe = Stripe("{{ stripe_pk }}");
+</script>
+
 {% endblock %} 
